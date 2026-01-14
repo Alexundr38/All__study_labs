@@ -1,39 +1,39 @@
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
-from sklearn import preprocessing
-import numpy as np
+state={'q1':{'a':('A','r','q2'),' ':(' ','r','q1')}, #дойти до букв
+       'q2':{'a':('a','r','q2'),'b':('b','r','q2'),'c':('c','r','q2'),' ':(' ','l','q3')}, #дойти до конца
+       'q3':{'a':('A','l','q4'),'b':('A','l','q5'),'c':('A','l','q6'),'A':('a','n','q22')}, #выбор пути по последней букве
+       'q4':{'a':('a','l','q4'),'b':('b','l','q4'),'c':('c','l','q4'),'A':('A','r','q7')}, #дойти до начала по a
+       'q5':{'a':('a','l','q5'),'b':('b','l','q5'),'c':('c','l','q5'),'A':('B','r','q7')}, #дойти до начала по b
+       'q6':{'a':('a','l','q6'),'b':('b','l','q6'),'c':('c','l','q6'),'A':('C','r','q7')}, #дойти до начала по c
+       'q7':{'a':('a','r','q8'),'b':('b','r','q9'),'c':('c','r','q10'),'A':('A','r','q20'),'B':('B','r','q20'),'C':('C','r','q20')}, #считывание буквы
+       'q8':{'a':('a','r','q8'),'b':('b','r','q8'),'c':('c','r','q8'),'A':('A','l','q11'),'B':('B','l','q11'),'C':('C','l','q11')}, #дойти до заглавной справа по А
+       'q9':{'a':('a','r','q9'),'b':('b','r','q9'),'c':('c','r','q9'),'A':('A','l','q12'),'B':('B','l','q12'),'C':('C','l','q12')}, #дойти до заглавной справа по b
+       'q10':{'a':('a','r','q10'),'b':('b','r','q10'),'c':('c','r','q10'),'A':('A','l','q13'),'B':('B','l','q13'),'C':('C','l','q13')}, #дойти до заглавной справа по c
+       'q11':{'a':('A','l','q14'),'b':('A','l','q15'),'c':('A','l','q16')}, #замена на A и считывание буквы справа
+       'q12':{'a':('B','l','q14'),'b':('B','l','q15'),'c':('B','l','q16')}, #замена на B и считывание буквы справа
+       'q13':{'a':('C','l','q14'),'b':('C','l','q15'),'c':('C','l','q16')}, #замена на C и считывание буквы справа
+       'q14':{'a':('a','l','q14'),'b':('b','l','q14'),'c':('c','l','q14'),'A':('A','r','q17'),'B':('B','r','q17'),'C':('C','r','q17')}, #дойти до заглавной слева по a
+       'q15':{'a':('a','l','q15'),'b':('b','l','q15'),'c':('c','l','q15'),'A':('A','r','q18'),'B':('B','r','q18'),'C':('C','r','q18')}, #дойти до заглавной слева по b
+       'q16':{'a':('a','l','q16'),'b':('b','l','q16'),'c':('c','l','q16'),'A':('A','r','q19'),'B':('B','r','q19'),'C':('C','r','q19')}, #дойти до заглавной слева по c
+       'q17':{'a':('A','r','q7'),'b':('A','r','q7'),'c':('A','r','q7'),'A':('A','r','q20'),'B':('B','r','q20'),'C':('C','r','q20')}, #замена на A и переход к считыванию буквы слева
+       'q18':{'a':('B','r','q7'),'b':('B','r','q7'),'c':('B','r','q7'),'A':('A','r','q20'),'B':('B','r','q20'),'C':('C','r','q20')}, #замена на B и переход к считыванию буквы слева
+       'q19':{'a':('C','r','q7'),'b':('C','r','q7'),'c':('C','r','q7'),'A':('A','r','q20'),'B':('B','r','q20'),'C':('C','r','q20')}, #замена на C и переход к считыванию буквы слева
+       'q20':{'A':('A','r','q20'),'B':('B','r','q20'),'C':('C','r','q20'),' ':(' ','l','q21')}, #дойти до конца справа
+       'q21':{'A':('a','l','q21'),'B':('b','l','q21'),'C':('c','l','q21'),' ':(' ','n','q22')}  #дойти до начала слева, заменяя заглавные на строчные буквы
+}
 
-def load_data(train_size = 0.8):
-    wine = datasets.load_wine()
-    x = wine.data[:, [0, 1]]
-    y = wine.target
-    X_train, X_test, y_train, y_test = train_test_split(x, y, train_size = train_size, random_state = 42)
-    return X_train, X_test, y_train, y_test
 
-def train_model(X_train, y_train, n_neighbors = 15, weights = 'uniform'):
-    clf = KNeighborsClassifier(n_neighbors = n_neighbors, weights = weights)
-    clf.fit(X_train, y_train)
-    return clf
-
-def predict(clf, X_test):
-    res = clf.predict(X_test)
-    return res
-
-def estimate(res, y_test):
-    accuracy = accuracy_score(res, y_test)
-    accuracy = np.round(accuracy, 3)
-    return accuracy
-
-def scale(data, mode = 'standard'):
-    if mode == 'standard':
-        scaler = preprocessing.StandardScaler()
-    elif mode == 'maxabs':
-        scaler = preprocessing.MaxAbsScaler()
-    elif mode == 'minmax':
-        scaler = preprocessing.MinMaxScaler()
-    else:
-        return None
-    sc_data = scaler.fit_transform(data)
-    return sc_data
+s=input()
+tek='q1'
+sost=[tek]
+new=list(s)
+i=0
+while tek!='q22':
+    c=new[i]
+    ch,vect,tek=state[tek][c]
+    new[i]=ch
+    if vect=='r':
+        i+=1
+    elif vect=='l':
+        i-=1
+    sost.append(tek)
+print(''.join(new))

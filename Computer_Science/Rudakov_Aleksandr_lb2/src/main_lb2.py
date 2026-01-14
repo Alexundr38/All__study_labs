@@ -1,92 +1,63 @@
-class Node:
-    def __init__(self, data, next = None):
-        self.__data = data
-        self.next = next
+# Задача 1
+def user_func(image, x0, y0, x1, y1, fill, width):
+    drawing=ImageDraw.Draw(image)
+    drawing.line(((x0,y0),(x1,y1)),fill,width)
+    return image
 
-    def get_data(self):
-        return self.__data
+# Задача 2
+def check_coords(image, x0, y0, x1, y1):
+    count=0
+    if x0<0 or x1<0 or y0<0 or y1<0:
+        count+=1
+    width,height=image.size
+    if x0>width or x1>width or y0>height or y1>height:
+        count+=1
+    if x0>x1 or y0>y1:
+        count+=1
+    if count==0:
+        return True
+    else:
+        return False
 
-    def change_data(self, new_data):
-        self.__data = new_data
+def set_black_white(image, x0, y0, x1, y1):
+    if check_coords(image,x0,y0,x1,y1):
+        polygon=image.crop((x0,y0,x1,y1))
+        polygon_new=polygon.convert('1')
+        image.paste(polygon_new,(x0,y0))
+    return image
 
-    def __str__(self):
-        if self.next != None:
-            return f"data: {self.__data}, next: {self.next.__data}"
-        else:
-            return f"data: {self.__data}, next: {self.next}"
-
-
-class LinkedList:
-    def __init__(self, head = None):
-        if head != None:
-            self.head = [head]
-        else:
-            self.head = []
-        self.length = len(self)
-
-    def __len__(self):
-        counts = 0
-        if self.head != [] and self.head != None:
-            counts = 1
-            item=self.head
-            while item.next != None:
-                item=item.next
-                counts += 1
-        self.length = counts
-        return counts
-
-    def append(self, element):
-        new_node = Node(element)
-        if self.length > 0 :
-            item = self.head
-            while item.next != None:
-                item=item.next
-            item.next = new_node
-            len(self)
-        else:
-            self.head = new_node
-            len(self)
-
-    def __str__(self):
-        if self.length == 0:
-            return "LinkedList[]"
-        else:
-            s = f"LinkedList[length = {self.length}, ["
-            item = self.head
-            while item != None:
-                s += str(item) + '; '
-                item = item.next
-            s = s[:-2] + ']]'
-        return s
-
-    def pop(self):
-        if len(self) == 0:
-            raise IndexError("LinkedList is empty!")
-        elif len(self) == 1:
-            self.head = None
-            len(self)
-        else:
-            item = self.head
-            while item.next.next != None:
-                item = item.next
-            item.next = None
-            len(self)
-
-    def change_on_start(self, n, new_data):
-        if len(self) < n or n <= 0:
-            raise KeyError("Element doesn't exist!")
-        else:
-            item = self.head
-            counted = 1
-            while counted != n:
-                item = item.next
-                counted += 1
-            item.change_data(new_data)
-
-    def clear(self):
-        self.length = 0
-        while self.head != None:
-            item = self.head
-            self.head = self.head.next
-            item = None
-
+# Задача 3
+def find_rect_and_recolor(image, old_color, new_color):
+    old_color_new = tuple(old_color)
+    new_color_new = tuple(new_color)
+    max_volume=0
+    width, height = image.size
+    pixels = image.load()
+    coor_x0 = coor_x1 = coor_y0 = coor_y1 =0
+    for x in range(width):
+        for y in range(height):
+            if pixels[x,y]==old_color_new:
+                x0_new = x1_new = x
+                y0_new = y1_new = y
+                while pixels[x1_new,y1_new]==old_color_new:
+                    y1_new+=1
+                    if y1_new==height:
+                        break
+                y1_new -= 1
+                while pixels[x1_new,y1_new]==old_color_new:
+                    x1_new+=1
+                    if x1_new==width:
+                        break
+                x1_new -= 1
+                volume=(x1_new-x0_new+1)*(y1_new-y0_new+1)
+                if volume>max_volume:
+                    max_volume=volume
+                    coor_x0=x0_new
+                    coor_x1=x1_new
+                    coor_y0=y0_new
+                    coor_y1=y1_new
+    for y in range(coor_y0, coor_y1 + 1):
+        for x in range(coor_x0, coor_x1 + 1):
+            pixels[x, y] = new_color_new
+    return image
+    
