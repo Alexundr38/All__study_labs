@@ -1,0 +1,1665 @@
+Журнал работы. Лабораторная работа 2: Управление процессами и потоками. 
+"Рудаков Александр гр 3384"
+
+sun@aleksundr:~/lb_os/lb2$ date
+Пт 21 мар 2025 11:11:53 MSK
+sun@aleksundr:~/lb_os/lb2$ who
+sun      seat0        2025-03-21 14:04 (login screen)
+sun      tty2         2025-03-21 14:04 (tty2)
+sun@aleksundr:~/lb_os/lb2$ uname -a
+Linux aleksundr 6.8.0-55-generic #57-Ubuntu SMP PREEMPT_DYNAMIC Wed Feb 12 23:42:21 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+sun@aleksundr:~/lb_os/lb2$ hostnamectl
+ Static hostname: aleksundr
+       Icon name: computer-laptop
+         Chassis: laptop 💻
+      Machine ID: 257e267604b64199b8de797dd49469de
+         Boot ID: dc438227b6f340e1939b4d895edbdd91
+Operating System: Ubuntu 24.04.1 LTS                
+          Kernel: Linux 6.8.0-55-generic
+    Architecture: x86-64
+ Hardware Vendor: Micro-Star International Co., Ltd.
+  Hardware Model: GF63 Thin 11UC
+Firmware Version: E16R6IMS.10B
+   Firmware Date: Thu 2021-12-30
+    Firmware Age: 3y 2month 2w 6d                   
+sun@aleksundr:~/lb_os/lb2$ lscpu
+Архитектура:              x86_64
+  CPU op-mode(s):         32-bit, 64-bit
+  Address sizes:          39 bits physical, 48 bits virtual
+  Порядок байт:           Little Endian
+CPU(s):                   12
+  On-line CPU(s) list:    0-11
+ID прроизводителя:        GenuineIntel
+  Имя модели:             11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz
+    Семейство ЦПУ:        6
+    Модель:               141
+    Потоков на ядро:      2
+    Ядер на сокет:        6
+    Сокетов:              1
+    Степпинг:             1
+    CPU(s) scaling MHz:   18%
+    CPU max MHz:          4500,0000
+    CPU min MHz:          800,0000
+    BogoMIPS:             5376,00
+    Флаги:                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge m
+                          ca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 s
+                          s ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc 
+                          art arch_perfmon pebs bts rep_good nopl xtopology nons
+                          top_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq 
+                          dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 
+                          xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_d
+                          eadline_timer aes xsave avx f16c rdrand lahf_lm abm 3d
+                          nowprefetch cpuid_fault epb cat_l2 cdp_l2 ssbd ibrs ib
+                          pb stibp ibrs_enhanced tpr_shadow flexpriority ept vpi
+                          d ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms 
+                          invpcid rdt_a avx512f avx512dq rdseed adx smap avx512i
+                          fma clflushopt clwb intel_pt avx512cd sha_ni avx512bw 
+                          avx512vl xsaveopt xsavec xgetbv1 xsaves split_lock_det
+                          ect user_shstk dtherm ida arat pln pts hwp hwp_notify 
+                          hwp_act_window hwp_epp hwp_pkg_req vnmi avx512vbmi umi
+                          p pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_v
+                          nni avx512_bitalg avx512_vpopcntdq rdpid movdiri movdi
+                          r64b fsrm avx512_vp2intersect md_clear ibt flush_l1d a
+                          rch_capabilities
+Virtualization features:  
+  Виртуализация:          VT-x
+Caches (sum of all):      
+  L1d:                    288 KiB (6 instances)
+  L1i:                    192 KiB (6 instances)
+  L2:                     7,5 MiB (6 instances)
+  L3:                     12 MiB (1 instance)
+NUMA:                     
+  NUMA node(s):           1
+  NUMA node0 CPU(s):      0-11
+Vulnerabilities:          
+  Gather data sampling:   Mitigation; Microcode
+  Itlb multihit:          Not affected
+  L1tf:                   Not affected
+  Mds:                    Not affected
+  Meltdown:               Not affected
+  Mmio stale data:        Not affected
+  Reg file data sampling: Not affected
+  Retbleed:               Not affected
+  Spec rstack overflow:   Not affected
+  Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prct
+                          l
+  Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointe
+                          r sanitization
+  Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditiona
+                          l; RSB filling; PBRSB-eIBRS SW sequence; BHI SW loop, 
+                          KVM SW loop
+  Srbds:                  Not affected
+  Tsx async abort:        Not affected
+
+
+Задание 1.
+1.1
+sun@aleksundr:~/lb_os/lb2$ date
+Пт 21 мар 2025 11:34:40 MSK
+un@aleksundr:~/lb_os/lb2$ mkdir task1
+un@aleksundr:~/lb_os/lb2$ cd task1
+sun@aleksundr:~/lb_os/lb2/task1$ vim script_task1.sh
+un@aleksundr:~/lb_os/lb2/task1$ chmod u+x script_task1.sh 
+sun@aleksundr:~/lb_os/lb2/task1$ ./script_task1.sh >> first_out & sleep 30 & ./script_task1.sh >> second_out &
+[1] 5676
+[2] 5677
+[3] 5678
+sun@aleksundr:~/lb_os/lb2/task1$ jobs
+[1]   Запущен          ./script_task1.sh >> first_out &
+[2]-  Запущен          sleep 30 &
+[3]+  Запущен          ./script_task1.sh >> second_out &
+sun@aleksundr:~/lb_os/lb2/task1$ notify %1
+sun@aleksundr:~/lb_os/lb2/task1$ fg %2
+sleep 30
+sun@aleksundr:~/lb_os/lb2/task1$ kill %3
+sun@aleksundr:~/lb_os/lb2/task1$ jobs
+[1]-  Запущен          ./script_task1.sh >> first_out &
+[3]+  Завершено      ./script_task1.sh >> second_out
+sun@aleksundr:~/lb_os/lb2/task1$ 
+[1]+  Завершён        ./script_task1.sh >> first_out
+
+
+1.2
+sun@aleksundr:~/lb_os/lb2/task1$ date
+Пт 21 мар 2025 12:22:07 MSK
+sun@aleksundr:~/lb_os/lb2/task1$ vim script_task1_2.sh
+sun@aleksundr:~/lb_os/lb2/task1$ chmod u+x script_task1_2.sh
+sun@aleksundr:~/lb_os/lb2/task1$ nohup ./script_task1_2.sh &
+[1] 6924
+sun@aleksundr:~/lb_os/lb2/task1$ nohup: ввод игнорируется, вывод добавляется в 'nohup.out'
+sun@aleksundr:~/lb_os/lb2/task1$ ps -ef | grep script_task1_2.sh
+sun         6924    6902  0 12:25 pts/0    00:00:00 /bin/sh ./script_task1_2.sh
+sun         6973    6942  0 12:26 pts/1    00:00:00 grep --color=auto script_task1_2.sh
+
+#перезапуск системы 
+
+sun@aleksundr:~/lb_os/lb2/task1$ ps -ef | grep script_task1_2.sh
+sun         6924    1877  0 12:25 ?        00:00:00 /bin/sh ./script_task1_2.sh
+sun         7000    6993  0 12:26 pts/0    00:00:00 grep --color=auto script_task1_2.sh
+sun@aleksundr:~/lb_os/lb2/task1$ kill 6924
+sun@aleksundr:~/lb_os/lb2/task1$ ps -ef | grep script_task1_2.sh
+sun         7003    6993  0 12:26 pts/0    00:00:00 grep --color=auto script_task1_2.sh
+
+
+1.3
+sun@aleksundr:~/lb_os/lb2/task1$ ps -eo user,uid,pid,comm,cmd --sort=uid | head -n 3
+USER       UID     PID COMMAND         CMD
+root         0       1 systemd         /sbin/init splash
+root         0       2 kthreadd        [kthreadd]
+sun@aleksundr:~/lb_os/lb2/task1$ ps -eo user,uid,pid,comm,cmd --sort=pid | head -n 3
+USER       UID     PID COMMAND         CMD
+root         0       1 systemd         /sbin/init splash
+root         0       2 kthreadd        [kthreadd]
+sun@aleksundr:~/lb_os/lb2/task1$ id -u
+1000
+sun@aleksundr:~/lb_os/lb2/task1$ cat /proc/sys/kernel/pid_max
+4194304
+sun@aleksundr:~/lb_os/lb2/task1$ ps -f -p 1
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 11:04 ?        00:00:01 /sbin/init splash
+sun@aleksundr:~/lb_os/lb2/task1$ ps -f -p 4194304
+UID          PID    PPID  C STIME TTY          TIME CMD
+
+
+1.4
+sun@aleksundr:~/lb_os/lb2/task1$ date
+Пт 21 мар 2025 12:51:26 MSK
+sun@aleksundr:~/lb_os/lb2/task1$ ps -o user,uid,pid,cmd -u root
+USER       UID     PID CMD
+root         0       1 /sbin/init splash
+root         0       2 [kthreadd]
+root         0       3 [pool_workqueue_release]
+root         0       4 [kworker/R-rcu_g]
+root         0       5 [kworker/R-rcu_p]
+root         0       6 [kworker/R-slub_]
+root         0       7 [kworker/R-netns]
+root         0       9 [kworker/0:0H-events_highpri]
+root         0      12 [kworker/R-mm_pe]
+root         0      13 [rcu_tasks_kthread]
+root         0      14 [rcu_tasks_rude_kthread]
+root         0      15 [rcu_tasks_trace_kthread]
+root         0      16 [ksoftirqd/0]
+root         0      17 [rcu_preempt]
+root         0      18 [migration/0]
+root         0      19 [idle_inject/0]
+root         0      20 [cpuhp/0]
+root         0      21 [cpuhp/1]
+root         0      22 [idle_inject/1]
+root         0      23 [migration/1]
+root         0      24 [ksoftirqd/1]
+root         0      26 [kworker/1:0H-events_highpri]
+root         0      27 [cpuhp/2]
+root         0      28 [idle_inject/2]
+root         0      29 [migration/2]
+root         0      30 [ksoftirqd/2]
+root         0      32 [kworker/2:0H-events_highpri]
+root         0      33 [cpuhp/3]
+root         0      34 [idle_inject/3]
+root         0      35 [migration/3]
+root         0      36 [ksoftirqd/3]
+root         0      38 [kworker/3:0H-events_highpri]
+root         0      39 [cpuhp/4]
+root         0      40 [idle_inject/4]
+root         0      41 [migration/4]
+root         0      42 [ksoftirqd/4]
+root         0      44 [kworker/4:0H-events_highpri]
+root         0      45 [cpuhp/5]
+root         0      46 [idle_inject/5]
+root         0      47 [migration/5]
+root         0      48 [ksoftirqd/5]
+root         0      50 [kworker/5:0H-events_highpri]
+root         0      51 [cpuhp/6]
+root         0      52 [idle_inject/6]
+root         0      53 [migration/6]
+root         0      54 [ksoftirqd/6]
+root         0      56 [kworker/6:0H-events_highpri]
+root         0      57 [cpuhp/7]
+root         0      58 [idle_inject/7]
+root         0      59 [migration/7]
+root         0      60 [ksoftirqd/7]
+root         0      62 [kworker/7:0H-events_highpri]
+root         0      63 [cpuhp/8]
+root         0      64 [idle_inject/8]
+root         0      65 [migration/8]
+root         0      66 [ksoftirqd/8]
+root         0      68 [kworker/8:0H-events_highpri]
+root         0      69 [cpuhp/9]
+root         0      70 [idle_inject/9]
+root         0      71 [migration/9]
+root         0      72 [ksoftirqd/9]
+root         0      74 [kworker/9:0H-events_highpri]
+root         0      75 [cpuhp/10]
+root         0      76 [idle_inject/10]
+root         0      77 [migration/10]
+root         0      78 [ksoftirqd/10]
+root         0      80 [kworker/10:0H-events_highpri]
+root         0      81 [cpuhp/11]
+root         0      82 [idle_inject/11]
+root         0      83 [migration/11]
+root         0      84 [ksoftirqd/11]
+root         0      85 [kworker/11:0-mm_percpu_wq]
+root         0      86 [kworker/11:0H-events_highpri]
+root         0      87 [kdevtmpfs]
+root         0      88 [kworker/R-inet_]
+root         0      90 [kauditd]
+root         0      91 [khungtaskd]
+root         0      92 [oom_reaper]
+root         0      94 [kworker/R-write]
+root         0      95 [kcompactd0]
+root         0      96 [ksmd]
+root         0      98 [khugepaged]
+root         0      99 [kworker/R-kinte]
+root         0     100 [kworker/R-kbloc]
+root         0     101 [kworker/R-blkcg]
+root         0     102 [irq/9-acpi]
+root         0     104 [kworker/R-tpm_d]
+root         0     105 [kworker/R-ata_s]
+root         0     106 [kworker/R-md]
+root         0     107 [kworker/R-md_bi]
+root         0     108 [kworker/R-edac-]
+root         0     109 [kworker/R-devfr]
+root         0     110 [watchdogd]
+root         0     112 [kworker/4:1H-events_highpri]
+root         0     113 [kswapd0]
+root         0     114 [ecryptfs-kthread]
+root         0     115 [kworker/R-kthro]
+root         0     116 [kworker/R-acpi_]
+root         0     117 [hwrng]
+root         0     121 [kworker/R-mld]
+root         0     122 [kworker/11:1H-events_highpri]
+root         0     123 [kworker/R-ipv6_]
+root         0     130 [kworker/R-kstrp]
+root         0     131 [kworker/1:1-mm_percpu_wq]
+root         0     132 [kworker/7:1-events]
+root         0     136 [kworker/u25:0-rb_allocator]
+root         0     151 [kworker/R-charg]
+root         0     175 [kworker/2:1H-kblockd]
+root         0     178 [kworker/0:1H-events_highpri]
+root         0     179 [kworker/3:1-events]
+root         0     180 [kworker/3:1H-kblockd]
+root         0     194 [kworker/1:1H-kblockd]
+root         0     222 [kworker/10:1H-events_highpri]
+root         0     223 [kworker/8:1H-kblockd]
+root         0     224 [kworker/9:1H-events_highpri]
+root         0     225 [kworker/5:1H-kblockd]
+root         0     226 [kworker/7:1H-kblockd]
+root         0     263 [kworker/R-nvme-]
+root         0     264 [kworker/R-nvme-]
+root         0     265 [kworker/R-nvme-]
+root         0     266 [kworker/R-nvme-]
+root         0     267 [scsi_eh_0]
+root         0     268 [kworker/R-scsi_]
+root         0     269 [scsi_eh_1]
+root         0     270 [kworker/R-scsi_]
+root         0     271 [scsi_eh_2]
+root         0     272 [kworker/R-scsi_]
+root         0     273 [kworker/6:1H-kblockd]
+root         0     276 [irq/144-PNP0C50:00]
+root         0     316 [jbd2/sda2-8]
+root         0     317 [kworker/R-ext4-]
+root         0     368 /usr/lib/systemd/systemd-journald
+root         0     455 /usr/lib/systemd/systemd-udevd
+root         0     495 [psimon]
+root         0     656 [kworker/R-cfg80]
+root         0     657 [irq/154-mei_me]
+root         0     663 [kworker/R-crypt]
+root         0     673 [irq/155-iwlwifi:default_queue]
+root         0     674 [irq/156-iwlwifi:queue_1]
+root         0     675 [irq/157-iwlwifi:queue_2]
+root         0     676 [irq/158-iwlwifi:queue_3]
+root         0     677 [irq/159-iwlwifi:queue_4]
+root         0     678 [irq/160-iwlwifi:queue_5]
+root         0     679 [irq/161-iwlwifi:queue_6]
+root         0     680 [irq/162-iwlwifi:queue_7]
+root         0     681 [irq/163-iwlwifi:queue_8]
+root         0     682 [irq/164-iwlwifi:queue_9]
+root         0     683 [irq/165-iwlwifi:queue_10]
+root         0     684 [irq/166-iwlwifi:queue_11]
+root         0     685 [irq/167-iwlwifi:queue_12]
+root         0     686 [irq/168-iwlwifi:exception]
+root         0     714 [kworker/R-ttm]
+root         0     715 [card1-crtc0]
+root         0     716 [card1-crtc1]
+root         0     717 [card1-crtc2]
+root         0     718 [card1-crtc3]
+root         0     722 [jbd2/sda3-8]
+root         0     723 [kworker/R-ext4-]
+root         0     880 [kworker/4:3-events]
+root         0     881 [kworker/R-ttm]
+root         0     966 /usr/libexec/accounts-daemon
+root         0     973 /usr/libexec/bluetooth/bluetoothd
+root         0     974 /usr/sbin/cron -f -P
+root         0    1001 /usr/libexec/power-profiles-daemon
+root         0    1007 /usr/lib/snapd/snapd
+root         0    1009 /usr/libexec/switcheroo-control
+root         0    1010 /usr/lib/systemd/systemd-logind
+root         0    1012 /usr/sbin/thermald --systemd --dbus-enable --adaptive
+root         0    1013 /usr/libexec/udisks2/udisksd
+root         0    1157 [irq/171-AudioDSP]
+root         0    1172 /usr/sbin/NetworkManager --no-daemon
+root         0    1221 /usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant
+root         0    1257 /usr/sbin/ModemManager
+root         0    1478 [psimon]
+root         0    1525 /usr/sbin/cupsd -l
+root         0    1528 /usr/bin/python3 /usr/share/unattended-upgrades/unattende
+root         0    1544 /usr/bin/containerd
+root         0    1629 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/co
+root         0    1863 /usr/sbin/gdm3
+root         0    1870 gdm-session-worker [pam/gdm-autologin]
+root         0    1964 fusermount3 -o rw,nosuid,nodev,fsname=portal,auto_unmount
+root         0    2110 [krfcommd]
+root         0    2231 /usr/libexec/upowerd
+root         0    5400 /usr/libexec/fwupd/fwupd
+root         0    5494 [kworker/u24:4-events_power_efficient]
+root         0    5957 [kworker/2:0-events]
+root         0    6164 [kworker/8:0-mm_percpu_wq]
+root         0    6205 [kworker/0:0-events]
+root         0    6213 [kworker/5:2-mm_percpu_wq]
+root         0    6295 [kworker/1:0]
+root         0    6849 [kworker/u25:2]
+root         0    6886 [kworker/9:2-mm_percpu_wq]
+root         0    7146 [kworker/4:0]
+root         0    7269 [kworker/7:0]
+root         0    7270 [kworker/3:2]
+root         0    7273 [kworker/11:1-mm_percpu_wq]
+root         0    7284 [kworker/10:2-i915-unordered]
+root         0    7355 [kworker/6:2-events]
+root         0    8440 [kworker/2:1-mm_percpu_wq]
+root         0    8441 [kworker/u24:0-events_power_efficient]
+root         0    8485 [kworker/u25:1+i915_flip]
+root         0    8505 [kworker/10:0-i915-unordered]
+root         0    8510 [kworker/8:1-mm_percpu_wq]
+root         0    8552 [kworker/9:0-mm_percpu_wq]
+root         0    8596 [kworker/0:1]
+root         0    8631 [kworker/5:0]
+root         0    8643 [kworker/6:0-mm_percpu_wq]
+root         0    8646 [kworker/u24:1-events_power_efficient]
+root         0    8670 [kworker/8:2]
+root         0    8689 [kworker/2:2]
+root         0    8694 [kworker/10:1-mm_percpu_wq]
+root         0    8698 [kworker/5:1]
+sun@aleksundr:~/lb_os/lb2/task1$ ps -eo user,uid,pid,comm,cmd | grep '/sbin'
+root         0       1 systemd         /sbin/init splash
+root         0     974 cron            /usr/sbin/cron -f -P
+root         0    1012 thermald        /usr/sbin/thermald --systemd --dbus-enable --adaptive
+syslog     104    1053 rsyslogd        /usr/sbin/rsyslogd -n -iNONE
+root         0    1172 NetworkManager  /usr/sbin/NetworkManager --no-daemon
+root         0    1221 wpa_supplicant  /usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant GROUP=netdev
+root         0    1257 ModemManager    /usr/sbin/ModemManager
+root         0    1525 cupsd           /usr/sbin/cupsd -l
+cups-br+   130    1628 cups-browsed    /usr/sbin/cups-browsed
+kernoops   113    1631 kerneloops      /usr/sbin/kerneloops --test
+kernoops   113    1634 kerneloops      /usr/sbin/kerneloops
+root         0    1863 gdm3            /usr/sbin/gdm3
+sun       1000    8742 grep            grep --color=auto /sbin
+
+#systemd - менеджер процессов и служб, который запускается первым при загрузке системы и управляет всеми остальными процессами.
+#cron - демон для выполнения задач по расписанию.
+#NetworkManager - демон для управления сетевыми подключениями.
+#cupsd - демон для управления печатью.
+
+
+1.5
+sun@aleksundr:~/lb_os/lb2/task1$ date
+Пт 21 мар 2025 12:59:21 MSK
+sun@aleksundr:~/lb_os/lb2/task1$ echo $$
+8432
+sun@aleksundr:~/lb_os/lb2/task1$ ps -o user,uid,pid,ppid,comm,cmd -p $$
+USER       UID     PID    PPID COMMAND         CMD
+sun       1000    8432    8425 bash            bash
+sun@aleksundr:~/lb_os/lb2/task1$ ps -o user,uid,pid,ppid,comm,cmd -p 8425
+USER       UID     PID    PPID COMMAND         CMD
+sun       1000    8425    1877 gnome-terminal- /usr/libexec/gnome-terminal-serve
+sun@aleksundr:~/lb_os/lb2/task1$ ps -o user,uid,pid,ppid,comm,cmd -p 1877
+USER       UID     PID    PPID COMMAND         CMD
+sun       1000    1877       1 systemd         /usr/lib/systemd/systemd --user
+sun@aleksundr:~/lb_os/lb2/task1$ ls -l /proc/1877
+итого 0
+-r--r--r--  1 sun sun   0 мар 21 13:03 arch_status
+dr-xr-xr-x  2 sun sun   0 мар 21  2025 attr
+-rw-r--r--  1 sun sun   0 мар 21 13:03 autogroup
+-r--------  1 sun sun   0 мар 21 13:03 auxv
+-r--r--r--  1 sun sun   0 мар 21  2025 cgroup
+--w-------  1 sun sun   0 мар 21 13:03 clear_refs
+-r--r--r--  1 sun sun   0 мар 21  2025 cmdline
+-rw-r--r--  1 sun sun   0 мар 21  2025 comm
+-rw-r--r--  1 sun sun   0 мар 21 13:03 coredump_filter
+-r--r--r--  1 sun sun   0 мар 21 13:03 cpu_resctrl_groups
+-r--r--r--  1 sun sun   0 мар 21 13:03 cpuset
+lrwxrwxrwx  1 sun sun   0 мар 21 11:05 cwd
+-r--------  1 sun sun   0 мар 21 12:14 environ
+lrwxrwxrwx  1 sun sun   0 мар 21  2025 exe
+dr-x------  2 sun sun 134 мар 21  2025 fd
+dr-xr-xr-x  2 sun sun   0 мар 21  2025 fdinfo
+-rw-r--r--  1 sun sun   0 мар 21  2025 gid_map
+-r--------  1 sun sun   0 мар 21 13:03 io
+-r--------  1 sun sun   0 мар 21 13:03 ksm_merging_pages
+-r--------  1 sun sun   0 мар 21 13:03 ksm_stat
+-r--r--r--  1 sun sun   0 мар 21 13:03 latency
+-r--r--r--  1 sun sun   0 мар 21 13:03 limits
+-rw-r--r--  1 sun sun   0 мар 21  2025 loginuid
+dr-x------  2 sun sun   0 мар 21 13:03 map_files
+-r--r--r--  1 sun sun   0 мар 21 11:05 maps
+-rw-------  1 sun sun   0 мар 21 13:03 mem
+-r--r--r--  1 sun sun   0 мар 21  2025 mountinfo
+-r--r--r--  1 sun sun   0 мар 21 13:03 mounts
+-r--------  1 sun sun   0 мар 21 13:03 mountstats
+dr-xr-xr-x 59 sun sun   0 мар 21  2025 net
+dr-x--x--x  2 sun sun   0 мар 21  2025 ns
+-r--r--r--  1 sun sun   0 мар 21 13:03 numa_maps
+-rw-r--r--  1 sun sun   0 мар 21 13:03 oom_adj
+-r--r--r--  1 sun sun   0 мар 21 13:03 oom_score
+-rw-r--r--  1 sun sun   0 мар 21  2025 oom_score_adj
+-r--------  1 sun sun   0 мар 21 13:03 pagemap
+-r--------  1 sun sun   0 мар 21 13:03 patch_state
+-r--------  1 sun sun   0 мар 21 13:03 personality
+-rw-r--r--  1 sun sun   0 мар 21 13:03 projid_map
+lrwxrwxrwx  1 sun sun   0 мар 21 11:05 root
+-rw-r--r--  1 sun sun   0 мар 21 13:03 sched
+-r--r--r--  1 sun sun   0 мар 21 13:03 schedstat
+-r--r--r--  1 sun sun   0 мар 21  2025 sessionid
+-rw-r--r--  1 sun sun   0 мар 21 13:03 setgroups
+-r--r--r--  1 sun sun   0 мар 21 13:03 smaps
+-r--r--r--  1 sun sun   0 мар 21 13:03 smaps_rollup
+-r--------  1 sun sun   0 мар 21 13:03 stack
+-r--r--r--  1 sun sun   0 мар 21  2025 stat
+-r--r--r--  1 sun sun   0 мар 21 12:47 statm
+-r--r--r--  1 sun sun   0 мар 21  2025 status
+-r--------  1 sun sun   0 мар 21 13:03 syscall
+dr-xr-xr-x  3 sun sun   0 мар 21 13:03 task
+-rw-r--r--  1 sun sun   0 мар 21 13:03 timens_offsets
+-r--r--r--  1 sun sun   0 мар 21 13:03 timers
+-rw-rw-rw-  1 sun sun   0 мар 21 13:03 timerslack_ns
+-rw-r--r--  1 sun sun   0 мар 21  2025 uid_map
+-r--r--r--  1 sun sun   0 мар 21 13:03 wchan
+sun@aleksundr:~/lb_os/lb2/task1$ cat /proc/1877/status
+Name:	systemd
+Umask:	0002
+State:	S (sleeping)
+Tgid:	1877
+Ngid:	0
+Pid:	1877
+PPid:	1
+TracerPid:	0
+Uid:	1000	1000	1000	1000
+Gid:	1000	1000	1000	1000
+FDSize:	512
+Groups:	4 24 27 30 46 122 135 136 1000 1001 1004 
+NStgid:	1877
+NSpid:	1877
+NSpgid:	1877
+NSsid:	1877
+Kthread:	0
+VmPeak:	   21716 kB
+VmSize:	   21464 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	   13952 kB
+VmRSS:	   13952 kB
+RssAnon:	    4352 kB
+RssFile:	    9600 kB
+RssShmem:	       0 kB
+VmData:	    2440 kB
+VmStk:	     132 kB
+VmExe:	      44 kB
+VmLib:	   12188 kB
+VmPTE:	      80 kB
+VmSwap:	       0 kB
+HugetlbPages:	       0 kB
+CoreDumping:	0
+THP_enabled:	1
+untag_mask:	0xffffffffffffffff
+Threads:	1
+SigQ:	0/62482
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	7fefc1fe28014a03
+SigIgn:	0000000000001000
+SigCgt:	0000000000000000
+CapInh:	0000000800000000
+CapPrm:	0000000800000000
+CapEff:	0000000800000000
+CapBnd:	000001ffffffffff
+CapAmb:	0000000000000000
+NoNewPrivs:	0
+Seccomp:	0
+Seccomp_filters:	0
+Speculation_Store_Bypass:	thread vulnerable
+SpeculationIndirectBranch:	conditional enabled
+Cpus_allowed:	fff
+Cpus_allowed_list:	0-11
+Mems_allowed:	00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	1137
+nonvoluntary_ctxt_switches:	92
+x86_Thread_features:	
+x86_Thread_features_locked:
+
+
+Задание 2.
+2.1
+sun@aleksundr:~/lb_os/lb2/task2$ date
+Пт 21 мар 2025 22:32:46 MSK
+sun@aleksundr:~/lb_os/lb2/task2$ vim script_task2_1.c 
+sun@aleksundr:~/lb_os/lb2/task2$ echo $$
+4985
+sun@aleksundr:~/lb_os/lb2/task2$ gcc script_task2_1.c -o task2_1 && ./task2_1
+Parent process: PID = 5421, Child PID = 5422
+PID = 5421, PPID = 4985 in stage 0
+Parent process: PID = 5422, Child PID = 0
+PID = 5422, PPID = 5421 in stage 0
+PID = 5421, PPID = 4985 in stage 1
+PID = 5422, PPID = 5421 in stage 1
+PID = 5421, PPID = 4985 in stage 2
+PID = 5422, PPID = 5421 in stage 2
+PID = 5421, PPID = 4985 in stage 3
+PID = 5422, PPID = 5421 in stage 3
+PID = 5421, PPID = 4985 in stage 4
+PID = 5422, PPID = 5421 in stage 4
+ 5421 process finished
+ 5422 process finished
+
+
+2.2
+sun@aleksundr:~/lb_os/lb2/task2$ date
+Пт 21 мар 2025 23:10:02 MSK
+sun@aleksundr:~/lb_os/lb2/task2$ vim script_task2_2_father.c
+sun@aleksundr:~/lb_os/lb2/task2$ vim script_task2_2_son.c
+sun@aleksundr:~/lb_os/lb2/task2$ gcc script_task2_2_father.c -o father2_2
+sun@aleksundr:~/lb_os/lb2/task2$ gcc script_task2_2_son.c -o son2_2
+sun@aleksundr:~/lb_os/lb2/task2$ ./father2_2
+Father process started with PID: 6901
+Child process created with PID: 6905
+Son process started with PID: 6905
+Son process finished.
+Father process finished.
+sun@aleksundr:~/lb_os/lb2/task2$ cat father_processes_before_wait.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_wai pts/0    00:00:00 bash
+0 S  1000    6901    4985  0  80   0 -   637 do_wai pts/0    00:00:00 father2_2
+0 S  1000    6902    6901  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    6903    6902  0  80   0 -  3461 -      pts/0    00:00:00 ps
+sun@aleksundr:~/lb_os/lb2/task2$ cat father_processes_after_wait.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_wai pts/0    00:00:00 bash
+0 S  1000    6901    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_2
+0 S  1000    6908    6901  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    6909    6908  0  80   0 -  3461 -      pts/0    00:00:00 ps
+sun@aleksundr:~/lb_os/lb2/task2$ cat son_processes.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_wai pts/0    00:00:00 bash
+0 S  1000    6901    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_2
+0 S  1000    6905    6901  0  80   0 -   670 do_wai pts/0    00:00:00 son2_2
+0 S  1000    6906    6905  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    6907    6906  0  80   0 -  3461 -      pts/0    00:00:00 ps
+sun@aleksundr:~/lb_os/lb2/task2$ ./father2_2 &
+[1] 6939
+sun@aleksundr:~/lb_os/lb2/task2$ Father process started with PID: 6939
+Child process created with PID: 6942
+Son process started with PID: 6942
+Son process finished.
+Father process finished.
+cat father_processes_before_wait.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_sel pts/0    00:00:00 bash
+0 S  1000    6939    4985  0  80   0 -   637 do_wai pts/0    00:00:00 father2_2
+0 S  1000    6940    6939  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    6941    6940  0  80   0 -  3461 -      pts/0    00:00:00 ps
+[1]+  Завершён        ./father2_2
+sun@aleksundr:~/lb_os/lb2/task2$ cat father_processes_after_wait.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_sel pts/0    00:00:00 bash
+0 S  1000    6939    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_2
+0 S  1000    6946    6939  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    6947    6946  0  80   0 -  3461 -      pts/0    00:00:00 ps
+sun@aleksundr:~/lb_os/lb2/task2$ cat son_processes.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_sel pts/0    00:00:00 bash
+0 S  1000    6939    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_2
+0 S  1000    6942    6939  0  80   0 -   670 do_wai pts/0    00:00:00 son2_2
+0 S  1000    6944    6942  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    6945    6944  0  80   0 -  3461 -      pts/0    00:00:00 ps
+
+
+2.3
+sun@aleksundr:~/lb_os/lb2/task2$ date
+Пт 21 мар 2025 23:46:22 MSK
+sun@aleksundr:~/lb_os/lb2/task2$ vim script_task2_3_father.c 
+sun@aleksundr:~/lb_os/lb2/task2$ vim script_task2_3_son.c 
+sun@aleksundr:~/lb_os/lb2/task2$ gcc script_task2_3_father.c -o father2_3
+sun@aleksundr:~/lb_os/lb2/task2$ gcc script_task2_3_son.c -o son2_3
+sun@aleksundr:~/lb_os/lb2/task2$ ./father2_3
+Using execl():
+==========================
+Son process started with PID: 7403
+ Arguments:
+argv[0] = ./son2_3
+argv[1] = arg1
+argv[2] = arg2
+argv[3] = arg3
+ Environment variables:
+envp[0] = SHELL=/bin/bash
+envp[1] = SESSION_MANAGER=local/aleksundr:@/tmp/.ICE-unix/1981,unix/aleksundr:/tmp/.ICE-unix/1981
+envp[2] = QT_ACCESSIBILITY=1
+envp[3] = COLORTERM=truecolor
+envp[4] = XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
+envp[5] = XDG_MENU_PREFIX=gnome-
+envp[6] = GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+envp[7] = GNOME_SHELL_SESSION_MODE=ubuntu
+envp[8] = SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+envp[9] = MEMORY_PRESSURE_WRITE=c29tZSAyMDAwMDAgMjAwMDAwMAA=
+envp[10] = XMODIFIERS=@im=ibus
+envp[11] = DESKTOP_SESSION=ubuntu
+envp[12] = GTK_MODULES=gail:atk-bridge
+envp[13] = DBUS_STARTER_BUS_TYPE=session
+envp[14] = PWD=/home/sun/lb_os/lb2/task2
+envp[15] = LOGNAME=sun
+envp[16] = XDG_SESSION_DESKTOP=ubuntu
+envp[17] = XDG_SESSION_TYPE=wayland
+envp[18] = SYSTEMD_EXEC_PID=1981
+envp[19] = XAUTHORITY=/run/user/1000/.mutter-Xwaylandauth.RC8B32
+envp[20] = HOME=/home/sun
+envp[21] = USERNAME=sun
+envp[22] = IM_CONFIG_PHASE=1
+envp[23] = LANG=ru_RU.UTF-8
+envp[24] = LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+envp[25] = XDG_CURRENT_DESKTOP=ubuntu:GNOME
+envp[26] = MEMORY_PRESSURE_WATCH=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome\x2dsession\x2dmanager.slice/gnome-session-manager@ubuntu.service/memory.pressure
+envp[27] = VTE_VERSION=7600
+envp[28] = WAYLAND_DISPLAY=wayland-0
+envp[29] = GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/2b1cfdda_c07d_4814_96bc_1e02a9722f50
+envp[30] = GNOME_SETUP_DISPLAY=:1
+envp[31] = LESSCLOSE=/usr/bin/lesspipe %s %s
+envp[32] = XDG_SESSION_CLASS=user
+envp[33] = TERM=xterm-256color
+envp[34] = LESSOPEN=| /usr/bin/lesspipe %s
+envp[35] = USER=sun
+envp[36] = GNOME_TERMINAL_SERVICE=:1.133
+envp[37] = DISPLAY=:0
+envp[38] = SHLVL=1
+envp[39] = GSM_SKIP_SSH_AGENT_WORKAROUND=true
+envp[40] = QT_IM_MODULE=ibus
+envp[41] = DBUS_STARTER_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[42] = XDG_RUNTIME_DIR=/run/user/1000
+envp[43] = DEBUGINFOD_URLS=https://debuginfod.ubuntu.com 
+envp[44] = XDG_DATA_DIRS=/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+envp[45] = PATH=/home/sun/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+envp[46] = GDMSESSION=ubuntu
+envp[47] = DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[48] = OLDPWD=/home/sun/lb_os/lb2
+envp[49] = _=./father2_3
+Son process finished.
+==========================
+Using execv():
+==========================
+Son process started with PID: 7404
+ Arguments:
+argv[0] = ./son2_3
+argv[1] = arg1
+argv[2] = arg2
+argv[3] = arg3
+ Environment variables:
+envp[0] = SHELL=/bin/bash
+envp[1] = SESSION_MANAGER=local/aleksundr:@/tmp/.ICE-unix/1981,unix/aleksundr:/tmp/.ICE-unix/1981
+envp[2] = QT_ACCESSIBILITY=1
+envp[3] = COLORTERM=truecolor
+envp[4] = XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
+envp[5] = XDG_MENU_PREFIX=gnome-
+envp[6] = GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+envp[7] = GNOME_SHELL_SESSION_MODE=ubuntu
+envp[8] = SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+envp[9] = MEMORY_PRESSURE_WRITE=c29tZSAyMDAwMDAgMjAwMDAwMAA=
+envp[10] = XMODIFIERS=@im=ibus
+envp[11] = DESKTOP_SESSION=ubuntu
+envp[12] = GTK_MODULES=gail:atk-bridge
+envp[13] = DBUS_STARTER_BUS_TYPE=session
+envp[14] = PWD=/home/sun/lb_os/lb2/task2
+envp[15] = LOGNAME=sun
+envp[16] = XDG_SESSION_DESKTOP=ubuntu
+envp[17] = XDG_SESSION_TYPE=wayland
+envp[18] = SYSTEMD_EXEC_PID=1981
+envp[19] = XAUTHORITY=/run/user/1000/.mutter-Xwaylandauth.RC8B32
+envp[20] = HOME=/home/sun
+envp[21] = USERNAME=sun
+envp[22] = IM_CONFIG_PHASE=1
+envp[23] = LANG=ru_RU.UTF-8
+envp[24] = LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+envp[25] = XDG_CURRENT_DESKTOP=ubuntu:GNOME
+envp[26] = MEMORY_PRESSURE_WATCH=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome\x2dsession\x2dmanager.slice/gnome-session-manager@ubuntu.service/memory.pressure
+envp[27] = VTE_VERSION=7600
+envp[28] = WAYLAND_DISPLAY=wayland-0
+envp[29] = GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/2b1cfdda_c07d_4814_96bc_1e02a9722f50
+envp[30] = GNOME_SETUP_DISPLAY=:1
+envp[31] = LESSCLOSE=/usr/bin/lesspipe %s %s
+envp[32] = XDG_SESSION_CLASS=user
+envp[33] = TERM=xterm-256color
+envp[34] = LESSOPEN=| /usr/bin/lesspipe %s
+envp[35] = USER=sun
+envp[36] = GNOME_TERMINAL_SERVICE=:1.133
+envp[37] = DISPLAY=:0
+envp[38] = SHLVL=1
+envp[39] = GSM_SKIP_SSH_AGENT_WORKAROUND=true
+envp[40] = QT_IM_MODULE=ibus
+envp[41] = DBUS_STARTER_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[42] = XDG_RUNTIME_DIR=/run/user/1000
+envp[43] = DEBUGINFOD_URLS=https://debuginfod.ubuntu.com 
+envp[44] = XDG_DATA_DIRS=/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+envp[45] = PATH=/home/sun/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+envp[46] = GDMSESSION=ubuntu
+envp[47] = DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[48] = OLDPWD=/home/sun/lb_os/lb2
+envp[49] = _=./father2_3
+Son process finished.
+==========================
+Using execle():
+==========================
+Son process started with PID: 7405
+ Arguments:
+argv[0] = ./son2_3
+argv[1] = arg1
+argv[2] = arg2
+argv[3] = arg3
+ Environment variables:
+envp[0] = ENV1=value1
+envp[1] = ENV2=value2
+envp[2] = ENV3=value3
+Son process finished.
+==========================
+Using execve():
+==========================
+Son process started with PID: 7406
+ Arguments:
+argv[0] = ./son2_3
+argv[1] = arg1
+argv[2] = arg2
+argv[3] = arg3
+ Environment variables:
+envp[0] = ENV1=value1
+envp[1] = ENV2=value2
+envp[2] = ENV3=value3
+Son process finished.
+==========================
+Using execlp():
+==========================
+Son process started with PID: 7407
+ Arguments:
+argv[0] = ./son2_3
+argv[1] = arg1
+argv[2] = arg2
+argv[3] = arg3
+ Environment variables:
+envp[0] = SHELL=/bin/bash
+envp[1] = SESSION_MANAGER=local/aleksundr:@/tmp/.ICE-unix/1981,unix/aleksundr:/tmp/.ICE-unix/1981
+envp[2] = QT_ACCESSIBILITY=1
+envp[3] = COLORTERM=truecolor
+envp[4] = XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
+envp[5] = XDG_MENU_PREFIX=gnome-
+envp[6] = GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+envp[7] = GNOME_SHELL_SESSION_MODE=ubuntu
+envp[8] = SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+envp[9] = MEMORY_PRESSURE_WRITE=c29tZSAyMDAwMDAgMjAwMDAwMAA=
+envp[10] = XMODIFIERS=@im=ibus
+envp[11] = DESKTOP_SESSION=ubuntu
+envp[12] = GTK_MODULES=gail:atk-bridge
+envp[13] = DBUS_STARTER_BUS_TYPE=session
+envp[14] = PWD=/home/sun/lb_os/lb2/task2
+envp[15] = LOGNAME=sun
+envp[16] = XDG_SESSION_DESKTOP=ubuntu
+envp[17] = XDG_SESSION_TYPE=wayland
+envp[18] = SYSTEMD_EXEC_PID=1981
+envp[19] = XAUTHORITY=/run/user/1000/.mutter-Xwaylandauth.RC8B32
+envp[20] = HOME=/home/sun
+envp[21] = USERNAME=sun
+envp[22] = IM_CONFIG_PHASE=1
+envp[23] = LANG=ru_RU.UTF-8
+envp[24] = LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+envp[25] = XDG_CURRENT_DESKTOP=ubuntu:GNOME
+envp[26] = MEMORY_PRESSURE_WATCH=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome\x2dsession\x2dmanager.slice/gnome-session-manager@ubuntu.service/memory.pressure
+envp[27] = VTE_VERSION=7600
+envp[28] = WAYLAND_DISPLAY=wayland-0
+envp[29] = GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/2b1cfdda_c07d_4814_96bc_1e02a9722f50
+envp[30] = GNOME_SETUP_DISPLAY=:1
+envp[31] = LESSCLOSE=/usr/bin/lesspipe %s %s
+envp[32] = XDG_SESSION_CLASS=user
+envp[33] = TERM=xterm-256color
+envp[34] = LESSOPEN=| /usr/bin/lesspipe %s
+envp[35] = USER=sun
+envp[36] = GNOME_TERMINAL_SERVICE=:1.133
+envp[37] = DISPLAY=:0
+envp[38] = SHLVL=1
+envp[39] = GSM_SKIP_SSH_AGENT_WORKAROUND=true
+envp[40] = QT_IM_MODULE=ibus
+envp[41] = DBUS_STARTER_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[42] = XDG_RUNTIME_DIR=/run/user/1000
+envp[43] = DEBUGINFOD_URLS=https://debuginfod.ubuntu.com 
+envp[44] = XDG_DATA_DIRS=/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+envp[45] = PATH=/home/sun/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+envp[46] = GDMSESSION=ubuntu
+envp[47] = DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[48] = OLDPWD=/home/sun/lb_os/lb2
+envp[49] = _=./father2_3
+Son process finished.
+==========================
+Using execvp():
+==========================
+Son process started with PID: 7408
+ Arguments:
+argv[0] = ./son2_3
+argv[1] = arg1
+argv[2] = arg2
+argv[3] = arg3
+ Environment variables:
+envp[0] = SHELL=/bin/bash
+envp[1] = SESSION_MANAGER=local/aleksundr:@/tmp/.ICE-unix/1981,unix/aleksundr:/tmp/.ICE-unix/1981
+envp[2] = QT_ACCESSIBILITY=1
+envp[3] = COLORTERM=truecolor
+envp[4] = XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
+envp[5] = XDG_MENU_PREFIX=gnome-
+envp[6] = GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+envp[7] = GNOME_SHELL_SESSION_MODE=ubuntu
+envp[8] = SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+envp[9] = MEMORY_PRESSURE_WRITE=c29tZSAyMDAwMDAgMjAwMDAwMAA=
+envp[10] = XMODIFIERS=@im=ibus
+envp[11] = DESKTOP_SESSION=ubuntu
+envp[12] = GTK_MODULES=gail:atk-bridge
+envp[13] = DBUS_STARTER_BUS_TYPE=session
+envp[14] = PWD=/home/sun/lb_os/lb2/task2
+envp[15] = LOGNAME=sun
+envp[16] = XDG_SESSION_DESKTOP=ubuntu
+envp[17] = XDG_SESSION_TYPE=wayland
+envp[18] = SYSTEMD_EXEC_PID=1981
+envp[19] = XAUTHORITY=/run/user/1000/.mutter-Xwaylandauth.RC8B32
+envp[20] = HOME=/home/sun
+envp[21] = USERNAME=sun
+envp[22] = IM_CONFIG_PHASE=1
+envp[23] = LANG=ru_RU.UTF-8
+envp[24] = LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+envp[25] = XDG_CURRENT_DESKTOP=ubuntu:GNOME
+envp[26] = MEMORY_PRESSURE_WATCH=/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome\x2dsession\x2dmanager.slice/gnome-session-manager@ubuntu.service/memory.pressure
+envp[27] = VTE_VERSION=7600
+envp[28] = WAYLAND_DISPLAY=wayland-0
+envp[29] = GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/2b1cfdda_c07d_4814_96bc_1e02a9722f50
+envp[30] = GNOME_SETUP_DISPLAY=:1
+envp[31] = LESSCLOSE=/usr/bin/lesspipe %s %s
+envp[32] = XDG_SESSION_CLASS=user
+envp[33] = TERM=xterm-256color
+envp[34] = LESSOPEN=| /usr/bin/lesspipe %s
+envp[35] = USER=sun
+envp[36] = GNOME_TERMINAL_SERVICE=:1.133
+envp[37] = DISPLAY=:0
+envp[38] = SHLVL=1
+envp[39] = GSM_SKIP_SSH_AGENT_WORKAROUND=true
+envp[40] = QT_IM_MODULE=ibus
+envp[41] = DBUS_STARTER_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[42] = XDG_RUNTIME_DIR=/run/user/1000
+envp[43] = DEBUGINFOD_URLS=https://debuginfod.ubuntu.com 
+envp[44] = XDG_DATA_DIRS=/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+envp[45] = PATH=/home/sun/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+envp[46] = GDMSESSION=ubuntu
+envp[47] = DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus,guid=9906c87e109184a55468501e67ddbc60
+envp[48] = OLDPWD=/home/sun/lb_os/lb2
+envp[49] = _=./father2_3
+Son process finished.
+==========================
+Father process finished.
+
+
+2.4
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ date
+Сб 22 мар 2025 00:19:47 MSK
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ vim script_task2_4_son.c 
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ vim script_task2_4_father.c 
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ gcc script_task2_4_son.c -o son2_4
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ gcc script_task2_4_father.c -o father2_4
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ ./father2_4 
+
+--- Situation 1: Normal completion ---
+Father process waiting for son to finish...
+Son process started in script_task2_4_son.c with PID: 8116, PPID: 8115
+Son process finished.
+Father process finished.
+
+--- Situation 2: Parent exits first ---
+Son process before parent exit: PID = 8121, PPID = 8115
+Father process exiting without waiting for son...
+Son process after parent exit: PID = 8122, PPID = 1805
+Son process started in script_task2_4_son.c with PID: 8122, PPID: 1805
+
+--- Situation 3: Zombie state ---
+Father process not waiting for son...
+Son process started in script_task2_4_son.c with PID: 8126, PPID: 8115
+Son process finished.
+Son process finished.
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ cat parent_wait.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_wai pts/0    00:00:00 bash
+0 S  1000    8115    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_4
+0 S  1000    8116    8115  0  80   0 -   670 hrtime pts/0    00:00:00 son2_4
+0 S  1000    8117    8115  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    8118    8117  0  80   0 -  3461 -      pts/0    00:00:00 ps
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ cat parent_exit.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_wai pts/0    00:00:00 bash
+0 S  1000    8115    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_4
+1 S  1000    8121    8115  0  80   0 -   670 do_wai pts/0    00:00:00 father2_4
+1 S  1000    8122    8121  0  80   0 -   670 hrtime pts/0    00:00:00 father2_4
+0 S  1000    8123    8121  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    8124    8123  0  80   0 -  3461 -      pts/0    00:00:00 ps
+sun@aleksundr:~/lb_os/lb2/task2/2.4$ cat zombie_state.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    4985    4974  0  80   0 -  3200 do_wai pts/0    00:00:00 bash
+0 S  1000    8115    4985  0  80   0 -   670 do_wai pts/0    00:00:00 father2_4
+0 Z  1000    8126    8115  0  80   0 -     0 -      pts/0    00:00:00 son2_4
+0 S  1000    8127    8115  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 R  1000    8128    8127  0  80   0 -  3461 -      pts/0    00:00:00 ps
+
+
+Задание 3.
+3.1
+sun@aleksundr:~/lb_os/lb2/task3$ date
+Сб 22 мар 2025 15:40:19 MSK
+sun@aleksundr:~/lb_os/lb2/task3$ kill -l
+ 1) SIGHUP	 2) SIGINT	 3) SIGQUIT	 4) SIGILL	 5) SIGTRAP
+ 6) SIGABRT	 7) SIGBUS	 8) SIGFPE	 9) SIGKILL	10) SIGUSR1
+11) SIGSEGV	12) SIGUSR2	13) SIGPIPE	14) SIGALRM	15) SIGTERM
+16) SIGSTKFLT	17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+21) SIGTTIN	22) SIGTTOU	23) SIGURG	24) SIGXCPU	25) SIGXFSZ
+26) SIGVTALRM	27) SIGPROF	28) SIGWINCH	29) SIGIO	30) SIGPWR
+31) SIGSYS	34) SIGRTMIN	35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3
+38) SIGRTMIN+4	39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14	51) SIGRTMAX-13	52) SIGRTMAX-12
+53) SIGRTMAX-11	54) SIGRTMAX-10	55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7
+58) SIGRTMAX-6	59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+63) SIGRTMAX-1	64) SIGRTMAX	
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ vim script_task3_1_father.c 
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ vim script_task3_1_son1.c 
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ vim script_task3_1_son2.c 
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ vim script_task3_1_son3.c 
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ gcc script_task3_1_father.c -o script_task3_1_father
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ gcc script_task3_1_son1.c -o script_task3_1_son1
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ gcc script_task3_1_son2.c -o script_task3_1_son2
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ gcc script_task3_1_son3.c -o script_task3_1_son3
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ ./script_task3_1_father 
+son1: PID = 6088
+son2: PID = 6089
+son3: PID = 6090
+son3: signal 10 has been received
+son3: finished
+son2: finished
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ cat processes_before.txt 
+  UID     PID          PENDING          BLOCKED          IGNORED           CAUGHT STAT TTY        TIME COMMAND
+ 1000    1830 0000000000000000 0000000000000000 0000000000001000 0000000100004000 Ssl+ tty2       0:00 /usr/libexec/gdm-wayland-session env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+ 1000    1845 0000000000000000 0000000000000000 0000000000001000 0000000100004003 Sl+  tty2       0:00 /usr/libexec/gnome-session-binary --session=ubuntu
+ 1000    4384 0000000000000000 0000000000010000 0000000000384004 000000004b813efb Ss   pts/0      0:00 bash
+ 1000    6087 0000000000000000 0000000000010000 0000000000000006 0000000000000000 S+   pts/0      0:00 ./script_task3_1_father
+ 1000    6088 0000000000000000 0000000000000000 0000000000000000 0000000000000000 S+   pts/0      0:00 script_task3_1_son1
+ 1000    6089 0000000000000000 0000000000000000 0000000000000200 0000000000000000 S+   pts/0      0:00 script_task3_1_son2
+ 1000    6090 0000000000000000 0000000000000000 0000000000000000 0000000000000200 S+   pts/0      0:00 script_task3_1_son3
+ 1000    6091 0000000000000000 0000000000000000 0000000000000000 0000000000010002 S+   pts/0      0:00 sh -c -- ps -s > processes_before.txt
+ 1000    6092 0000000000000000 0000000000000000 0000000000000000 000000007391fef9 R+   pts/0      0:00 ps -s
+sun@aleksundr:~/lb_os/lb2/task3/3.1$ cat processes_after.txt 
+  UID     PID          PENDING          BLOCKED          IGNORED           CAUGHT STAT TTY        TIME COMMAND
+ 1000    1830 0000000000000000 0000000000000000 0000000000001000 0000000100004000 Ssl+ tty2       0:00 /usr/libexec/gdm-wayland-session env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+ 1000    1845 0000000000000000 0000000000000000 0000000000001000 0000000100004003 Sl+  tty2       0:00 /usr/libexec/gnome-session-binary --session=ubuntu
+ 1000    4384 0000000000000000 0000000000010000 0000000000384004 000000004b813efb Ss   pts/0      0:00 bash
+ 1000    6087 0000000000010000 0000000000010000 0000000000000006 0000000000000000 S+   pts/0      0:00 ./script_task3_1_father
+ 1000    6088 0000000000000200 0000000000000000 0000000000000000 0000000000000000 Z+   pts/0      0:00 [script_task3_1_] <defunct>
+ 1000    6089 0000000000000000 0000000000000000 0000000000000200 0000000000000000 S+   pts/0      0:00 script_task3_1_son2
+ 1000    6090 0000000000000000 0000000000000000 0000000000000000 0000000000000200 Z+   pts/0      0:00 [script_task3_1_] <defunct>
+ 1000    6114 0000000000000000 0000000000000000 0000000000000000 0000000000010002 S+   pts/0      0:00 sh -c -- ps -s > processes_after.txt
+ 1000    6115 0000000000000000 0000000000000000 0000000000000000 000000007391fef9 R+   pts/0      0:00 ps -s
+
+
+3.2
+sun@aleksundr:~/lb_os/lb2/task3/3.2$ date
+Сб 22 мар 2025 16:40:17 MSK
+sun@aleksundr:~/lb_os/lb2/task3/3.2$ vim script_task3_2.c 
+sun@aleksundr:~/lb_os/lb2/task3/3.2$ gcc script_task3_2.c -o script_task3_2
+sun@aleksundr:~/lb_os/lb2/task3/3.2$ ./script_task3_2 
+son 1 (PID: 8067) started
+son 2 (PID: 8068) started
+son 3 (PID: 8069) started
+father wait son with PID: 8067
+son 1 (PID: 8067) finished
+son with PID 8067 end with code: 3
+father wait son with PID: 8068
+son 2 (PID: 8068) finished
+son with PID 8068 end with code: 6
+father wait son with PID: 8069
+son 3 (PID: 8069) finished
+son with PID 8069 end with code: 9
+
+
+Задание 4.
+4.1
+sun@aleksundr:~/lb_os/lb2/task4$ date
+Вс 23 мар 2025 20:31:19 MSK
+un@aleksundr:~/lb_os/lb2/task4$ vim script_task4_1.c
+sun@aleksundr:~/lb_os/lb2/task4$ gcc script_task4_1.c -o script_task4_1
+sun@aleksundr:~/lb_os/lb2/task4$ ./script_task4_1 
+Thread 1 (clone) start, PID = 5775, TID = 5777
+Thread 2 (pthread) start, PID = 5775, TID = 5776
+Thread 1 (clone) finish
+Thread 2 (pthread) finish
+Main thread finish
+
+
+4.2
+sun@aleksundr:~/lb_os/lb2/task4$ date
+Вс 23 мар 2025 20:48:45 MSK
+sun@aleksundr:~/lb_os/lb2/task4$ strace -f ./script_task4_1 
+execve("./script_task4_1", ["./script_task4_1"], 0x7ffe59697d38 /* 50 vars */) = 0
+brk(NULL)                               = 0x55ed09596000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7c9946a8d000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (Нет такого файла или каталога)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=89451, ...}) = 0
+mmap(NULL, 89451, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7c9946a77000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
+pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+fstat(3, {st_mode=S_IFREG|0755, st_size=2125328, ...}) = 0
+pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+mmap(NULL, 2170256, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7c9946800000
+mmap(0x7c9946828000, 1605632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x7c9946828000
+mmap(0x7c99469b0000, 323584, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b0000) = 0x7c99469b0000
+mmap(0x7c99469ff000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1fe000) = 0x7c99469ff000
+mmap(0x7c9946a05000, 52624, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7c9946a05000
+close(3)                                = 0
+mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7c9946a74000
+arch_prctl(ARCH_SET_FS, 0x7c9946a74740) = 0
+set_tid_address(0x7c9946a74a10)         = 6125
+set_robust_list(0x7c9946a74a20, 24)     = 0
+rseq(0x7c9946a75060, 0x20, 0, 0x53053053) = 0
+mprotect(0x7c99469ff000, 16384, PROT_READ) = 0
+mprotect(0x55eccc6c2000, 4096, PROT_READ) = 0
+mprotect(0x7c9946ac5000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0x7c9946a77000, 89451)           = 0
+getrandom("\xb9\xa6\x04\x33\x21\xc7\xdf\x39", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0x55ed09596000
+brk(0x55ed095b7000)                     = 0x55ed095b7000
+mmap(NULL, 1052672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7c99466ff000
+rt_sigaction(SIGRT_1, {sa_handler=0x7c9946899530, sa_mask=[], sa_flags=SA_RESTORER|SA_ONSTACK|SA_RESTART|SA_SIGINFO, sa_restorer=0x7c9946845330}, NULL, 8) = 0
+rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
+mmap(NULL, 8392704, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7c9945e00000
+mprotect(0x7c9945e01000, 8388608, PROT_READ|PROT_WRITE) = 0
+rt_sigprocmask(SIG_BLOCK, ~[], [], 8)   = 0
+clone3({flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, child_tid=0x7c9946600990, parent_tid=0x7c9946600990, exit_signal=0, stack=0x7c9945e00000, stack_size=0x7fff80, tls=0x7c99466006c0} => {parent_tid=[6126]}, 88) = 6126
+strace: Process 6126 attached
+[pid  6125] rt_sigprocmask(SIG_SETMASK, [],  <unfinished ...>
+[pid  6126] rseq(0x7c9946600fe0, 0x20, 0, 0x53053053 <unfinished ...>
+[pid  6125] <... rt_sigprocmask resumed>NULL, 8) = 0
+[pid  6126] <... rseq resumed>)         = 0
+[pid  6126] set_robust_list(0x7c99466009a0, 24) = 0
+[pid  6126] rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+[pid  6126] gettid()                    = 6126
+[pid  6126] getpid()                    = 6125
+[pid  6126] fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+[pid  6126] mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7c993de00000
+[pid  6125] clone(child_stack=0x7c99467ff000, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD <unfinished ...>
+[pid  6126] munmap(0x7c993de00000, 35651584) = 0
+[pid  6126] munmap(0x7c9944000000, 31457280 <unfinished ...>
+[pid  6125] <... clone resumed>)        = 6127
+[pid  6126] <... munmap resumed>)       = 0
+[pid  6125] futex(0x7c9946600990, FUTEX_WAIT_BITSET|FUTEX_CLOCK_REALTIME, 6126, NULL, FUTEX_BITSET_MATCH_ANY <unfinished ...>
+[pid  6126] mprotect(0x7c9940000000, 135168, PROT_READ|PROT_WRITE) = 0
+[pid  6126] write(1, "Thread 2 (pthread) start, PID = "..., 49Thread 2 (pthread) start, PID = 6125, TID = 6126
+) = 49
+[pid  6126] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=10, tv_nsec=0}, strace: Process 6127 attached
+ <unfinished ...>
+[pid  6127] gettid()                    = 6127
+[pid  6127] getpid()                    = 6125
+[pid  6127] write(1, "Thread 1 (clone) start, PID = 61"..., 47Thread 1 (clone) start, PID = 6125, TID = 6127
+) = 47
+[pid  6127] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=10, tv_nsec=0}, ^C <unfinished ...>
+[pid  6125] <... futex resumed>)        = ? ERESTARTSYS (To be restarted if SA_RESTART is set)
+strace: Process 6125 detached
+strace: Process 6127 detached
+strace: Process 6126 detached
+
+sun@aleksundr:~/lb_os/lb2/task4$ ./script_task4_1 &
+[1] 6152
+sun@aleksundr:~/lb_os/lb2/task4$ Thread 2 (pthread) start, PID = 6152, TID = 6153
+Thread 1 (clone) start, PID = 6152, TID = 6154
+#в это время в другом терминале:
+sun@aleksundr:~/lb_os/lb2/task4$ ps -eLf | grep ./script_task4_1
+sun         6138    4223    6138  0    3 20:46 pts/0    00:00:00 ./script_task4_1
+sun         6138    4223    6139  0    3 20:46 pts/0    00:00:00 ./script_task4_1
+sun         6138    4223    6140  0    3 20:46 pts/0    00:00:00 ./script_task4_1
+sun         6143    5937    6143  0    1 20:46 pts/1    00:00:00 grep --color=auto ./script_task4_1
+#обратно
+Thread 2 (pthread) finish
+Thread 1 (clone) finish
+Main thread finish
+./script_task4_1 &
+[2] 6160
+[1]   Завершён        ./script_task4_1
+sun@aleksundr:~/lb_os/lb2/task4$ Thread 1 (clone) start, PID = 6160, TID = 6162
+Thread 2 (pthread) start, PID = 6160, TID = 6161
+#в это время в другом терминале
+sun@aleksundr:~/lb_os/lb2/task4$ pstree -p 6160
+script_task4_1(6160)─┬─{script_task4_1}(6161)
+                     └─{script_task4_1}(6162)
+#обратно
+Thread 1 (clone) finish
+Thread 2 (pthread) finish
+Main thread finish
+
+[2]+  Завершён        ./script_task4_1
+
+
+4.3
+sun@aleksundr:~/lb_os/lb2/task4/4.3$ date
+Вс 23 мар 2025 21:1	0:47 MSK
+sun@aleksundr:~/lb_os/lb2/task4/4.3$ vim script_task4_3.c
+sun@aleksundr:~/lb_os/lb2/task4/4.3$ gcc script_task4_3.c -o script_task4_3
+sun@aleksundr:~/lb_os/lb2/task4/4.3$ ./script_task4_3 
+Thread (6710) increment value to 1
+Thread (6711) increment value to 2
+Thread (6710) increment value to 3
+Thread (6711) increment value to 4
+Thread (6710) increment value to 5
+Thread (6711) increment value to 6
+Thread (6710) increment value to 7
+Thread (6711) increment value to 8
+Thread (6710) increment value to 9
+Thread (6711) increment value to 10
+Thread (6710) increment value to 11
+Thread (6711) increment value to 12
+Thread (6710) increment value to 13
+Thread (6711) increment value to 14
+Thread (6710) increment value to 15
+Thread (6711) increment value to 16
+Thread (6710) increment value to 17
+Thread (6711) increment value to 18
+Thread (6710) increment value to 19
+Thread (6711) increment value to 20
+Shared variable value: 20
+
+
+4.4
+sun@aleksundr:~/lb_os/lb2/task4/4.1$ date
+Вс 23 мар 2025 21:28:48 MSK
+sun@aleksundr:~/lb_os/lb2/task4/4.3$ ./script_task4_3
+Thread (6810) increment value to 1
+Thread (6811) increment value to 2
+Thread (6810) increment value to 3
+Thread (6811) increment value to 4
+Thread (6811) increment value to 5
+Thread (6810) increment value to 6
+Thread (6811) increment value to 7
+Thread (6810) increment value to 8
+Thread (6811) increment value to 9
+Thread (6810) increment value to 10
+Thread (6811) increment value to 11
+Thread (6810) increment value to 12
+Thread (6811) increment value to 13
+Thread (6810) increment value to 14
+Thread (6811) increment value to 15
+Thread (6810) increment value to 16
+#в другом терминале
+sun@aleksundr:~/lb_os/lb2/task4/4.1$ kill 6810
+#обратно
+Завершено
+sun@aleksundr:~/lb_os/lb2/task4/4.3$ ./script_task4_3
+Thread (6814) increment value to 1
+Thread (6815) increment value to 2
+Thread (6814) increment value to 3
+Thread (6815) increment value to 4
+Thread (6815) increment value to 5
+Thread (6814) increment value to 6
+Thread (6815) increment value to 7
+Thread (6814) increment value to 8
+Thread (6815) increment value to 9
+Thread (6814) increment value to 10
+Thread (6815) increment value to 11
+Thread (6814) increment value to 12
+Thread (6815) increment value to 13
+Thread (6814) increment value to 14
+Thread (6815) increment value to 15
+Thread (6814) increment value to 16
+#в другом терминале
+#-9 == SIGKILL
+sun@aleksundr:~/lb_os/lb2/task4/4.1$ kill -9 6814
+#обратно
+Убито
+
+
+Задание 5.
+5.1
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ date
+Чт 27 мар 2025 11:46:45 MSK
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ ps -eo pid,comm,policy,ni,cmd | grep $$
+   5039 bash            TS    0 bash
+   5610 grep            TS    0 grep --color=auto 5039
+#TS = SCHED_OTHER; nice = 0
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ vim script_task5_1_policy.c
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ gcc script_task5_1_policy.c -o script_task5_1_policy && ./script_task5_1_policy 
+PID = 6424
+Policy: SCHED_OTHER (CFS)
+Nice value: 0
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ vim script_task5_1_1.c 
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ gcc script_task5_1_1.c -o script_task5_1_1
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ sudo taskset -c 0 ./script_task5_1_1
+1 (PID: 20213) start
+2 (PID: 20214) start
+3 (PID: 20215) start
+1 (PID: 20213) work (i = 0)
+2 (PID: 20214) work (i = 0)
+3 (PID: 20215) work (i = 0)
+2 (PID: 20214) work (i = 1)
+3 (PID: 20215) work (i = 1)
+1 (PID: 20213) work (i = 1)
+3 (PID: 20215) work (i = 2)
+2 (PID: 20214) work (i = 2)
+1 (PID: 20213) work (i = 2)
+3 (PID: 20215) work (i = 3)
+2 (PID: 20214) work (i = 3)
+1 (PID: 20213) work (i = 3)
+2 (PID: 20214) work (i = 4)
+3 (PID: 20215) work (i = 4)
+1 (PID: 20213) work (i = 4)
+3 (PID: 20215) finish
+1 (PID: 20213) finish
+2 (PID: 20214) finish
+
+
+
+5.2
+sun@aleksundr:~/lb_os/lb2/task5/5.2$ date
+Чт 27 мар 2025 12:27:38 MSK
+sun@aleksundr:~/lb_os/lb2/task5/5.2$ vim script_task5_2.c
+sun@aleksundr:~/lb_os/lb2/task5/5.2$ gcc script_task5_2.c -o script_task5_2
+sun@aleksundr:~/lb_os/lb2/task5/5.2$ ./script_task5_2 
+PID=7762, nice=0
+PID=7762, nice=0
+PID=7762, nice=0
+#в другом окне:
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ renice -n 5 -p 7762
+7762 (process ID) старый приоритет 0, новый приоритет 5
+#обратно
+PID=7762, nice=5
+PID=7762, nice=5
+PID=7762, nice=5
+PID=7762, nice=5
+PID=7762, nice=5
+PID=7762, nice=5
+PID=7762, nice=5
+#в другом окне:
+sun@aleksundr:~/lb_os/lb2/task5/5.1$ renice -n 6 -p 7762
+7762 (process ID) старый приоритет 5, новый приоритет 6
+#обратно
+PID=7762, nice=6
+PID=7762, nice=6
+
+sun@aleksundr:~/lb_os/lb2/task5/5.2$ ps -eo pid,ni,comm | grep -E 'kworker'
+      4 -20 kworker/R-rcu_g
+      5 -20 kworker/R-rcu_p
+      6 -20 kworker/R-slub_
+      7 -20 kworker/R-netns
+      9 -20 kworker/0:0H-events_highpri
+     12 -20 kworker/R-mm_pe
+     26 -20 kworker/1:0H-events_highpri
+     32 -20 kworker/2:0H-events_highpri
+     38 -20 kworker/3:0H-events_highpri
+     44 -20 kworker/4:0H-events_highpri
+     50 -20 kworker/5:0H-events_highpri
+     56 -20 kworker/6:0H-events_highpri
+     62 -20 kworker/7:0H-kblockd
+     68 -20 kworker/8:0H-events_highpri
+     74 -20 kworker/9:0H-events_highpri
+     80 -20 kworker/10:0H-events_highpri
+     86 -20 kworker/11:0H-events_highpri
+     88 -20 kworker/R-inet_
+     94 -20 kworker/R-write
+     97   0 kworker/4:1-events_freezable
+     99 -20 kworker/R-kinte
+    100 -20 kworker/R-kbloc
+    101 -20 kworker/R-blkcg
+    103   0 kworker/6:1-mm_percpu_wq
+    105 -20 kworker/R-tpm_d
+    106 -20 kworker/R-ata_s
+    107 -20 kworker/R-md
+    108 -20 kworker/R-md_bi
+    109 -20 kworker/R-edac-
+    110 -20 kworker/R-devfr
+    112 -20 kworker/0:1H-events_highpri
+    116 -20 kworker/R-kthro
+    117 -20 kworker/R-acpi_
+    122 -20 kworker/R-mld
+    123 -20 kworker/4:1H-kblockd
+    124 -20 kworker/R-ipv6_
+    131 -20 kworker/R-kstrp
+    133   0 kworker/10:1-i915-unordered
+    136 -20 kworker/u25:0-rb_allocator
+    151 -20 kworker/R-charg
+    176 -20 kworker/7:1H
+    186 -20 kworker/2:1H-kblockd
+    194 -20 kworker/10:1H-events_highpri
+    195 -20 kworker/9:1H-kblockd
+    220 -20 kworker/6:1H-kblockd
+    222 -20 kworker/11:1H-kblockd
+    223 -20 kworker/1:1H-events_highpri
+    224 -20 kworker/5:1H-kblockd
+    225 -20 kworker/8:1H
+    226 -20 kworker/3:1H-kblockd
+    263 -20 kworker/R-nvme-
+    264 -20 kworker/R-nvme-
+    265 -20 kworker/R-nvme-
+    266 -20 kworker/R-nvme-
+    268 -20 kworker/R-scsi_
+    270 -20 kworker/R-scsi_
+    272 -20 kworker/R-scsi_
+    319 -20 kworker/R-ext4-
+    464   0 kworker/0:2-i915-unordered
+    663 -20 kworker/R-cfg80
+    675 -20 kworker/R-crypt
+    718 -20 kworker/R-ttm
+    727 -20 kworker/R-ext4-
+    775   0 kworker/3:3-mm_percpu_wq
+    876 -20 kworker/R-ttm
+   3025   0 kworker/7:3-mm_percpu_wq
+   4332 -20 kworker/u25:3+i915_flip
+#системные процессы имеют больший приоритет
+
+
+5.3
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ date
+Чт 27 мар 2025 12:52:00 MSK
+
+5.3.1
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ vim script_task5_3_1.c
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ gcc script_task5_3_1.c -o script_task5_3_1
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ sudo taskset -c 0 ./script_task5_3_1
+1 (PID: 20752) start
+2 (PID: 20753) start
+3 (PID: 20754) start
+1 (PID: 20752) work (i = 0)
+1 (PID: 20752) work (i = 1)
+1 (PID: 20752) work (i = 2)
+1 (PID: 20752) work (i = 3)
+1 (PID: 20752) work (i = 4)
+1 (PID: 20752) finish
+2 (PID: 20753) work (i = 0)
+2 (PID: 20753) work (i = 1)
+2 (PID: 20753) work (i = 2)
+2 (PID: 20753) work (i = 3)
+2 (PID: 20753) work (i = 4)
+2 (PID: 20753) finish
+3 (PID: 20754) work (i = 0)
+3 (PID: 20754) work (i = 1)
+3 (PID: 20754) work (i = 2)
+3 (PID: 20754) work (i = 3)
+3 (PID: 20754) work (i = 4)
+3 (PID: 20754) finish
+
+5.3.2
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ vim script_task5_3_2.c
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ gcc script_task5_3_2.c -o script_task5_3_2
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ ./script_task5_3_2
+SCHED_FIFO: min = 1, max = 99
+
+5.3.3
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ vim script_task5_3_3.c 
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ gcc script_task5_3_3.c -o script_task5_3_3
+sun@aleksundr:~/lb_os/lb2/task5/5.3$ sudo taskset -c 0 ./script_task5_3_3
+1 (PID: 20836, priority = 10) start
+2 (PID: 20837, priority = 50) start
+3 (PID: 20838, priority = 90) start
+3 (PID: 20838, priority = 90) work (i = 0)
+3 (PID: 20838, priority = 90) work (i = 1)
+3 (PID: 20838, priority = 90) work (i = 2)
+3 (PID: 20838, priority = 90) finish
+2 (PID: 20837, priority = 50) work (i = 0)
+2 (PID: 20837, priority = 50) work (i = 1)
+2 (PID: 20837, priority = 50) work (i = 2)
+2 (PID: 20837, priority = 50) finish
+1 (PID: 20836, priority = 10) work (i = 0)
+1 (PID: 20836, priority = 10) work (i = 1)
+1 (PID: 20836, priority = 10) work (i = 2)
+1 (PID: 20836, priority = 10) finish
+
+
+
+5.4
+5.4.1
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ date
+Чт 27 мар 2025 13:56:32 MSK
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ vim script_task5_4_1.c 
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ gcc script_task5_4_1.c -o script_task5_4_1
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ sudo taskset -c 0 ./script_task5_4_1
+1 (PID: 21015) start
+2 (PID: 21016) start
+3 (PID: 21017) start
+1 (PID: 21015) work (i = 0)
+2 (PID: 21016) work (i = 0)
+3 (PID: 21017) work (i = 0)
+1 (PID: 21015) work (i = 1)
+2 (PID: 21016) work (i = 1)
+3 (PID: 21017) work (i = 1)
+1 (PID: 21015) work (i = 2)
+2 (PID: 21016) work (i = 2)
+3 (PID: 21017) work (i = 2)
+1 (PID: 21015) work (i = 3)
+2 (PID: 21016) work (i = 3)
+3 (PID: 21017) work (i = 3)
+1 (PID: 21015) work (i = 4)
+2 (PID: 21016) work (i = 4)
+3 (PID: 21017) work (i = 4)
+1 (PID: 21015) finish
+2 (PID: 21016) finish
+3 (PID: 21017) finish
+
+
+5.4.2
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ vim script_task5_4_2.c
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ gcc script_task5_4_2.c -o script_task5_4_2
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ ./script_task5_4_2
+SCHED_RR: min = 1, max = 99
+
+5.4.3
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ vim script_task5_4_3.c 
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ gcc script_task5_4_3.c -o script_task5_4_3
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ sudo taskset -c 0 ./script_task5_4_3
+1 (PID: 6120, priority = 10) start
+1 (PID: 6120, priority = 10) work (i = 0)
+1 (PID: 6120, priority = 10) work (i = 1)
+2 (PID: 6121, priority = 50) start
+2 (PID: 6121, priority = 50) work (i = 0)
+3 (PID: 6122, priority = 90) start
+3 (PID: 6122, priority = 90) work (i = 0)
+3 (PID: 6122, priority = 90) work (i = 1)
+3 (PID: 6122, priority = 90) work (i = 2)
+3 (PID: 6122, priority = 90) work (i = 3)
+3 (PID: 6122, priority = 90) work (i = 4)
+3 (PID: 6122, priority = 90) finish
+2 (PID: 6121, priority = 50) work (i = 1)
+2 (PID: 6121, priority = 50) work (i = 2)
+2 (PID: 6121, priority = 50) work (i = 3)
+2 (PID: 6121, priority = 50) work (i = 4)
+2 (PID: 6121, priority = 50) finish
+1 (PID: 6120, priority = 10) work (i = 2)
+1 (PID: 6120, priority = 10) work (i = 3)
+1 (PID: 6120, priority = 10) work (i = 4)
+1 (PID: 6120, priority = 10) finish	
+
+5.4
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ vim script_task5_4_time.c
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ gcc script_task5_4_time.c -o script_task5_4_time
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ ./script_task5_4_time
+quantum = 0s, 3000000ns
+
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ vim script_task5_4_time.c
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ vim script_task5_4_yield.c 
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ gcc script_task5_4_yield.c -o script_task5_4_yield
+sun@aleksundr:~/lb_os/lb2/task5/5.4$ sudo taskset -c 0 ./script_task5_4_yield
+[sudo] пароль для sun: 
+1 (PID: 6277, priority = 50) start
+2 (PID: 6278, priority = 50) start
+3 (PID: 6279, priority = 10) start
+1 (PID: 6277, priority = 50) call sched_yield
+2 (PID: 6278, priority = 50) work (i = 0)
+2 (PID: 6278, priority = 50) work (i = 1)
+2 (PID: 6278, priority = 50) work (i = 2)
+2 (PID: 6278, priority = 50) work (i = 3)
+2 (PID: 6278, priority = 50) work (i = 4)
+2 (PID: 6278, priority = 50) finish
+1 (PID: 6277, priority = 50) work (i = 0)
+1 (PID: 6277, priority = 50) work (i = 1)
+1 (PID: 6277, priority = 50) work (i = 2)
+1 (PID: 6277, priority = 50) work (i = 3)
+1 (PID: 6277, priority = 50) work (i = 4)
+1 (PID: 6277, priority = 50) finish
+3 (PID: 6279, priority = 10) work (i = 0)
+3 (PID: 6279, priority = 10) work (i = 1)
+3 (PID: 6279, priority = 10) work (i = 2)
+3 (PID: 6279, priority = 10) work (i = 3)
+3 (PID: 6279, priority = 10) work (i = 4)
+3 (PID: 6279, priority = 10) finish
+
+
+5.5
+sun@aleksundr:~/lb_os/lb2/task5/5.5$ date
+Чт 27 мар 2025 20:03:16 MSK
+sun@aleksundr:~/lb_os/lb2/task5/5.5$ vim script_task5_5.c 
+sun@aleksundr:~/lb_os/lb2/task5/5.5$ gcc script_task5_5.c -o script_task5_5
+sun@aleksundr:~/lb_os/lb2/task5/5.5$ sudo taskset -c 0 ./script_task5_5
+Process B (SCHED_FIFO) running
+Process B (SCHED_FIFO) running
+Process B (SCHED_FIFO) running
+Process B (SCHED_FIFO) running
+Process B (SCHED_FIFO) running
+Process A (SCHED_RR) running
+Process A (SCHED_RR) running
+Process A (SCHED_RR) running
+Process A (SCHED_RR) running
+Process A (SCHED_RR) running
+Process C (SCHED_OTHER) running
+Process C (SCHED_OTHER) running
+Process C (SCHED_OTHER) running
+Process C (SCHED_OTHER) running
+Process C (SCHED_OTHER) running
+
+
+
+5.6
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ date
+Чт 27 мар 2025 20:39:43 MSK
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ vim script_task_5_6.c
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ gcc script_task_5_6.c -o script_task_5_6
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ ./script_task_5_6 
+Thread ID 135056785934016: policy = SCHED_OTHER (CFS), priority = 0
+Thread ID 135056775448256: policy = SCHED_OTHER (CFS), priority = 0
+
+5.6.1
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ vim script_task_5_6_1.c
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ gcc script_task_5_6_1.c -o script_task_5_6_1
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ sudo taskset -c 0 ./script_task5_6_1
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7817)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7818)
+Thread before policy change: policy = SCHED_OTHER, priority = 0 (TID = 7819)
+Thread after policy change: policy = SCHED_FIFO, priority = 50 (TID = 7819)
+Thread after policy change: policy = SCHED_FIFO, priority = 50 (TID = 7819)
+Thread after policy change: policy = SCHED_FIFO, priority = 50 (TID = 7819)
+Thread after policy change: policy = SCHED_FIFO, priority = 50 (TID = 7819)
+Thread after policy change: policy = SCHED_FIFO, priority = 50 (TID = 7819)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7818)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7817)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7818)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7817)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7817)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7818)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7817)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7818)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7817)
+Normal thread: policy = SCHED_OTHER, priority = 0 (TID = 7818)
+
+
+5.6.2
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ vim script_task_5_6_2.c
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ gcc script_task_5_6_2.c -o script_task_5_6_2
+sun@aleksundr:~/lb_os/lb2/task5/5.6$ sudo taskset -c 0 ./script_task5_6_2
+FIFO Thread 3 (priority 50) iteration 0
+OTHER Thread 1 (priority 0) iteration 0
+OTHER Thread 2 (priority 0) iteration 0
+FIFO Thread 3 (priority 50) iteration 1
+FIFO Thread 3 (priority 50) iteration 2
+FIFO Thread 3 (priority 50) iteration 3
+FIFO Thread 3 (priority 50) iteration 4
+OTHER Thread 1 (priority 0) iteration 1
+OTHER Thread 2 (priority 0) iteration 1
+OTHER Thread 1 (priority 0) iteration 2
+OTHER Thread 2 (priority 0) iteration 2
+OTHER Thread 1 (priority 0) iteration 3
+OTHER Thread 2 (priority 0) iteration 3
+OTHER Thread 1 (priority 0) iteration 4
+OTHER Thread 2 (priority 0) iteration 4
+
+
+Задание 6.
+6.1
+sun@aleksundr:~/lb_os/lb2/task6/6.1$ date
+Пт 28 мар 2025 20:12:08 MSK
+sun@aleksundr:~/lb_os/lb2/task6/6.1$ vim script_task6_1.c
+sun@aleksundr:~/lb_os/lb2/task6/6.1$ gcc script_task6_1.c -o script_task6_1
+sun@aleksundr:~/lb_os/lb2/task6/6.1$ ./script_task6_1 
+parent write
+Child read: parent text
+
+child exec ls
+script_task6_1	script_task6_1.c  text_task6_1.txt
+Parent read: parent text
+
+sun@aleksundr:~/lb_os/lb2/task6/6.1$ cat text_task6_1.txt 
+parent text
+child text
+
+
+6.2
+sun@aleksundr:~/lb_os/lb2/task6/6.2$ vim script_task6_2.c 
+sun@aleksundr:~/lb_os/lb2/task6/6.2$ gcc script_task6_2.c -o script_task6_2
+sun@aleksundr:~/lb_os/lb2/task6/6.2$ ./script_task6_2 
+Parent nice: 5
+Parent scheduler: 0
+Child nice: 5
+Child scheduler: 0
+Change child nice
+Child nice: 8
+Child scheduler: 0
+Parent nice: 5
+Parent scheduler: 0
+
+
+6.3
+sun@aleksundr:~/lb_os/lb2/task6/6.3$ vim script_task6_3.c 
+sun@aleksundr:~/lb_os/lb2/task6/6.3$ gcc script_task6_3.c -o script_task6_3
+sun@aleksundr:~/lb_os/lb2/task6/6.3$ ./script_task6_3 
+Parent PID: 7232
+Child PID: 7233 (after fork)
+Child: Testing signal handlers before exec...
+Process 7233 received signal 10
+Child: Executing sleep...
+Parent: Sending signals to child after exec...
+Parent: Child process finished.
+
+
+6.4
+sun@aleksundr:~/lb_os/lb2/task6/6.4$ vim script_task6_4.c
+sun@aleksundr:~/lb_os/lb2/task6/6.4$ gcc script_task6_4.c -o script_task6_4
+sun@aleksundr:~/lb_os/lb2/task6/6.4$ ./script_task6_4 
+Parent PID: 8312
+Child PID: 8313
+Child shared_var before: 100
+Child shared_var after: 101
+send SIGUSR1
+Process 8313 received signal 10
+Parent shared_var: 101
+Parent read:
+Parent wrote this
+Child wrote this
+sun@aleksundr:~/lb_os/lb2/task6/6.4$ cat text_task6_4.txt 
+Parent wrote this
+Child wrote this

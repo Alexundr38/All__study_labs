@@ -1,0 +1,1402 @@
+Журнал работы. Лабораторная работа 1: Файловые системы Unix-подобных ОС. 
+"Рудаков Александр гр 3384"
+
+sun@aleksundr:~/lb_os/lb_1$ date
+Пн 24 фев 2025 22:41:31 MSK
+sun@aleksundr:~/lb_os/lb_1$ who
+sun      seat0        2025-02-25 01:14 (login screen)
+sun      tty2         2025-02-25 01:14 (tty2)
+sun@aleksundr:~/lb_os/lb_1$ uname -a
+Linux aleksundr 6.8.0-52-generic #53-Ubuntu SMP PREEMPT_DYNAMIC Sat Jan 11 00:06:25 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+sun@aleksundr:~/lb_os/lb_1$ hostnamectl
+ Static hostname: aleksundr
+       Icon name: computer-laptop
+         Chassis: laptop 💻
+      Machine ID: 257e267604b64199b8de797dd49469de
+         Boot ID: 1228ef655c7943998f755ef02b6c06a9
+Operating System: Ubuntu 24.04.1 LTS                
+          Kernel: Linux 6.8.0-52-generic
+    Architecture: x86-64
+ Hardware Vendor: Micro-Star International Co., Ltd.
+  Hardware Model: GF63 Thin 11UC
+Firmware Version: E16R6IMS.10B
+   Firmware Date: Thu 2021-12-30
+    Firmware Age: 3y 1month 3w 5d                   
+sun@aleksundr:~/lb_os/lb_1$ lscpu
+Архитектура:              x86_64
+  CPU op-mode(s):         32-bit, 64-bit
+  Address sizes:          39 bits physical, 48 bits virtual
+  Порядок байт:           Little Endian
+CPU(s):                   12
+  On-line CPU(s) list:    0-11
+ID прроизводителя:        GenuineIntel
+  Имя модели:             11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz
+    Семейство ЦПУ:        6
+    Модель:               141
+    Потоков на ядро:      2
+    Ядер на сокет:        6
+    Сокетов:              1
+    Степпинг:             1
+    CPU(s) scaling MHz:   18%
+    CPU max MHz:          4500,0000
+    CPU min MHz:          800,0000
+    BogoMIPS:             5376,00
+    Флаги:                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge m
+                          ca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 s
+                          s ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc 
+                          art arch_perfmon pebs bts rep_good nopl xtopology nons
+                          top_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq 
+                          dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 
+                          xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_d
+                          eadline_timer aes xsave avx f16c rdrand lahf_lm abm 3d
+                          nowprefetch cpuid_fault epb cat_l2 cdp_l2 ssbd ibrs ib
+                          pb stibp ibrs_enhanced tpr_shadow flexpriority ept vpi
+                          d ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms 
+                          invpcid rdt_a avx512f avx512dq rdseed adx smap avx512i
+                          fma clflushopt clwb intel_pt avx512cd sha_ni avx512bw 
+                          avx512vl xsaveopt xsavec xgetbv1 xsaves split_lock_det
+                          ect user_shstk dtherm ida arat pln pts hwp hwp_notify 
+                          hwp_act_window hwp_epp hwp_pkg_req vnmi avx512vbmi umi
+                          p pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_v
+                          nni avx512_bitalg avx512_vpopcntdq rdpid movdiri movdi
+                          r64b fsrm avx512_vp2intersect md_clear ibt flush_l1d a
+                          rch_capabilities
+Virtualization features:  
+  Виртуализация:          VT-x
+Caches (sum of all):      
+  L1d:                    288 KiB (6 instances)
+  L1i:                    192 KiB (6 instances)
+  L2:                     7,5 MiB (6 instances)
+  L3:                     12 MiB (1 instance)
+NUMA:                     
+  NUMA node(s):           1
+  NUMA node0 CPU(s):      0-11
+Vulnerabilities:          
+  Gather data sampling:   Mitigation; Microcode
+  Itlb multihit:          Not affected
+  L1tf:                   Not affected
+  Mds:                    Not affected
+  Meltdown:               Not affected
+  Mmio stale data:        Not affected
+  Reg file data sampling: Not affected
+  Retbleed:               Not affected
+  Spec rstack overflow:   Not affected
+  Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prct
+                          l
+  Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointe
+                          r sanitization
+  Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditiona
+                          l; RSB filling; PBRSB-eIBRS SW sequence; BHI SW loop, 
+                          KVM SW loop
+  Srbds:                  Not affected
+  Tsx async abort:        Not affected
+
+
+Задание 1.
+sun@aleksundr:~/lb_os/lb_1$ date
+Ср 26 фев 2025 16:51:21 MSK
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^-" | head -n 1
+-rw-r-----   1 root root   620 ноя 13 23:54 debug
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^d" | head -n 1
+drwxr-xr-x   2 root root  4096 апр  8  2024 bin.usr-is-merged
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^b" | head -n 1
+brw-rw----   1 root disk      7,     0 фев 26 16:36 loop0
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^c" | head -n 1
+crw-r--r--   1 root root     10,   235 фев 26 16:36 autofs
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^l" | head -n 1
+lrwxrwxrwx   1 root root     7 сен 13  2023 bin -> usr/bin
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^p" | head -n 1
+prw-------  1 root              root      0 фев 26 16:36 initctl
+sun@aleksundr:~/lb_os/lb_1$ ls -lR / 2>/dev/null | grep "^s" | head -n 1
+srw-rw----  1 root              docker    0 фев 26 16:36 docker.sock
+sun@aleksundr:~/lb_os/lb_1$ vim script_task1.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task1.sh out_task1
+
+out_task1:
+-rw-r----- 1 root root 620 ноя 13 23:54 /debug
+drwxr-xr-x 2 root root 4096 апр 8 2024 /bin.usr-is-merged
+brw-rw---- 1 root disk 7, 0 фев 26 /dev/loop0
+crw-r--r-- 1 root root 10, 235 фев 26 /dev/autofs
+lrwxrwxrwx 1 root root 7 сен 13 2023 /usr/bin
+prw------- 1 root root 0 фев 26 16:36 /run/initctl
+srw-rw---- 1 root docker 0 фев 26 16:36 /run/docker.sock
+
+
+Задание 2.
+sun@aleksundr:~/lb_os/lb_1$ date
+Ср 26 фев 2025 17:32:53 MSK
+sun@aleksundr:~/lb_os/lb_1$ vim file_to_task2
+sun@aleksundr:~/lb_os/lb_1$ ln file_to_task2 first_link_task2
+sun@aleksundr:~/lb_os/lb_1$ ls -li | head -n 3
+итого 28
+7873800 -rw-rw-r-- 4 sun sun    4 фев 26 16:53 file_to_task2
+7873800 -rw-rw-r-- 4 sun sun    4 фев 26 16:53 first_link_task2
+sun@aleksundr:~/lb_os/lb_1$ cd ..
+sun@aleksundr:~/lb_os$ ln lb_1/file_to_task2 second_link_task2
+sun@aleksundr:~/lb_os$ cd ..
+sun@aleksundr:~$ mkdir test_task2
+sun@aleksundr:~$ cd test_task2/
+sun@aleksundr:~/test_task2$ ln ../lb_os/lb_1/file_to_task2 third_link_task2
+sun@aleksundr:~/test_task2$ cd ..
+sun@aleksundr:~$ cd lb_os
+sun@aleksundr:~/lb_os$ cd lb_1/
+sun@aleksundr:~/lb_os/lb_1$ vim script_task2.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task2.sh file_to_task2 
+/home/sun/lb_os/second_link_task2
+/home/sun/lb_os/lb_1/file_to_task2
+/home/sun/lb_os/lb_1/first_link_task2
+/home/sun/test_task2/third_link_task2
+
+
+Задание 3.
+sun@aleksundr:~/lb_os/lb_1$ date
+Ср 26 фев 2025 18:36:31 MSK
+sun@aleksundr:~/lb_os/lb_1$ echo "task3" > file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ cat file_to_task3
+task3
+sun@aleksundr:~/lb_os/lb_1$ ln -s file_to_task3 first_link_task3
+sun@aleksundr:~/lb_os/lb_1$ ls -li file_to_task3
+7865245 -rw-rw-r-- 1 sun sun 6 фев 26 18:39 file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ ls -li first_link_task3
+7865395 lrwxrwxrwx 1 sun sun 13 фев 26 18:41 first_link_task3 -> file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ cat first_link_task3
+task3
+sun@aleksundr:~/lb_os/lb_1$ cd ..
+sun@aleksundr:~/lb_os$ cd lb_1/
+sun@aleksundr:~/lb_os/lb_1$ cp -s file_to_task3 second_link_task3
+sun@aleksundr:~/lb_os/lb_1$ ls -li second_link_task3 
+7873803 lrwxrwxrwx 1 sun sun 13 фев 26 18:45 second_link_task3 -> file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ cat second_link_task3 
+task3
+sun@aleksundr:~/lb_os/lb_1$ man link
+sun@aleksundr:~/lb_os/lb_1$ link file_to_task3 third_link_task3
+sun@aleksundr:~/lb_os/lb_1$ ls -li third_link_task3 
+7865245 -rw-rw-r-- 2 sun sun 6 фев 26 18:39 third_link_task3
+sun@aleksundr:~/lb_os/lb_1$ rm third_link_task3 
+sun@aleksundr:~/lb_os/lb_1$ ls
+file_to_task2  first_link_task2  log.log    script_task1.sh  second_link_task3
+file_to_task3  first_link_task3  out_task1  script_task2.sh
+sun@aleksundr:~/lb_os/lb_1$ cd ..
+sun@aleksundr:~/lb_os$ cp -s lb_1/file_to_task3 third_link_task3
+sun@aleksundr:~/lb_os$ ls
+lb_1  second_link_task2  third_link_task3
+sun@aleksundr:~/lb_os$ ln -s lb_1/file_to_task3 fourth_link_task3
+sun@aleksundr:~/lb_os$ ls
+fourth_link_task3  lb_1  second_link_task2  third_link_task3
+sun@aleksundr:~/lb_os$ cd ..
+sun@aleksundr:~$ cd test_task2/
+sun@aleksundr:~/test_task2$ cd ..
+sun@aleksundr:~$ mv test_task2 test_task_os
+sun@aleksundr:~$ cd test_task_os/
+sun@aleksundr:~/test_task_os$ ls
+third_link_task2
+sun@aleksundr:~/test_task_os$ ln -s ../lb_os/lb_1/file_to_task3 fifth_link_task3
+sun@aleksundr:~/test_task_os$ ls -li fifth_link_task3 
+7997972 lrwxrwxrwx 1 sun sun 27 фев 26 18:59 fifth_link_task3 -> ../lb_os/lb_1/file_to_task3
+sun@aleksundr:~/test_task_os$ cat fifth_link_task3 
+task3
+sun@aleksundr:~/test_task_os$ cd ..
+sun@aleksundr:~$ cd lb_os/
+sun@aleksundr:~/lb_os$ cd lb_1/
+sun@aleksundr:~/lb_os/lb_1$ vim script_task3.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task3.sh file_to_task3
+/home/sun/lb_os/fourth_link_task3
+/home/sun/lb_os/third_link_task3
+/home/sun/lb_os/lb_1/first_link_task3
+/home/sun/lb_os/lb_1/second_link_task3
+/home/sun/test_task_os/fifth_link_task3
+Total symbolic links found: 5
+
+
+Задание 4.
+sun@aleksundr:~/lb_os/lb_1$ date
+Ср 26 фев 2025 20:50:22 MSK
+sun@aleksundr:~/lb_os/lb_1$ vim script_task4.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task4.sh file_to_task3
+/home/sun/lb_os/fourth_link_task3
+/home/sun/lb_os/third_link_task3
+/home/sun/lb_os/lb_1/first_link_task3
+/home/sun/lb_os/lb_1/second_link_task3
+/home/sun/test_task_os/fifth_link_task3
+sun@aleksundr:~/lb_os/lb_1$ vim script_task4_find.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task4_find.sh file_to_task3
+/home/sun/test_task_os/fifth_link_task3
+/home/sun/lb_os/third_link_task3
+/home/sun/lb_os/lb_1/first_link_task3
+/home/sun/lb_os/lb_1/second_link_task3
+/home/sun/lb_os/fourth_link_task3
+sun@aleksundr:~/lb_os/lb_1$ bash script_task4_find_readlink.sh file_to_task3
+/home/sun/test_task_os/fifth_link_task3
+/home/sun/lb_os/third_link_task3
+/home/sun/lb_os/lb_1/first_link_task3
+/home/sun/lb_os/lb_1/second_link_task3
+/home/sun/lb_os/fourth_link_task3
+sun@aleksundr:~/lb_os/lb_1$ mv script_task4.sh script_task4_ls.sh
+
+
+Задание 5.
+sun@aleksundr:~/lb_os/lb_1$ date
+Ср 26 фев 2025 21:54:18 MSK
+sun@aleksundr:~/lb_os/lb_1$ find .
+.
+./script_task4_find.sh
+./file_to_task2
+./first_link_task2
+./script_task2.sh
+./log.log
+./script_task1.sh
+./script_task3.sh
+./file_to_task3
+./script_task4_ls.sh
+./script_task4_find_readlink.sh
+./first_link_task3
+./out_task1
+./second_link_task3
+sun@aleksundr:~/lb_os/lb_1$ find -name "*.sh"
+./script_task4_find.sh
+./script_task2.sh
+./script_task1.sh
+./script_task3.sh
+./script_task4_ls.sh
+./script_task4_find_readlink.sh
+sun@aleksundr:~/lb_os/lb_1$ find -name "*.sh" -not -name "*find*"
+./script_task2.sh
+./script_task1.sh
+./script_task3.sh
+./script_task4_ls.sh
+sun@aleksundr:~/lb_os/lb_1$ find . -type l -exec ls -li {} \;
+7865395 lrwxrwxrwx 1 sun sun 13 фев 26 18:41 ./first_link_task3 -> file_to_task3
+7873803 lrwxrwxrwx 1 sun sun 13 фев 26 18:45 ./second_link_task3 -> file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ find . \( -name "*ls.sh" -o -name "file*3" \) -exec bash -c 'script=$(find . -name "*ls.sh"); arg=$(find . -name "file*3"); bash "$script" "$arg"' \;
+/home/sun/lb_os/fourth_link_task3
+/home/sun/lb_os/third_link_task3
+/home/sun/lb_os/lb_1/first_link_task3
+/home/sun/lb_os/lb_1/second_link_task3
+/home/sun/test_task_os/fifth_link_task3
+
+
+
+Задание 6.
+sun@aleksundr:~/lb_os/lb_1$ date
+Чт 27 фев 2025 23:45:03 MSK
+sun@aleksundr:~/lb_os/lb_1$ bash script_task1.sh out_task1
+sun@aleksundr:~/lb_os/lb_1$ ls
+file_to_task2     out_task1                      script_task4_find.sh
+file_to_task3     script_task1.sh                script_task4_ls.sh
+first_link_task2  script_task2.sh                second_link_task3
+first_link_task3  script_task3.sh
+log.log           script_task4_find_readlink.sh
+sun@aleksundr:~/lb_os/lb_1$ file file_to_task3
+file_to_task3: ASCII text
+sun@aleksundr:~/lb_os/lb_1$ file first_link_task3
+first_link_task3: symbolic link to file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ file script_task1.sh
+script_task1.sh: Bourne-Again shell script, ASCII text executable
+sun@aleksundr:~/lb_os/lb_1$ file /debug
+/debug: regular file, no read permission
+sun@aleksundr:~/lb_os/lb_1$ file /bin.usr-is-merged
+/bin.usr-is-merged: directory
+sun@aleksundr:~/lb_os/lb_1$ file /dev/loop0
+/dev/loop0: block special (7/0)
+sun@aleksundr:~/lb_os/lb_1$ file /dev/autofs
+/dev/autofs: character special (10/235)
+sun@aleksundr:~/lb_os/lb_1$ file /usr/bin
+/usr/bin: directory
+sun@aleksundr:~/lb_os/lb_1$ file /run/initctl
+/run/initctl: fifo (named pipe)
+sun@aleksundr:~/lb_os/lb_1$ file /run/docker.sock
+/run/docker.sock: socket
+sun@aleksundr:~/lb_os/lb_1$ od file_to_task3
+0000000 060564 065563 005063
+0000006
+sun@aleksundr:~/lb_os/lb_1$ cat file_to_task3
+task3
+un@aleksundr:~/lb_os/lb_1$ echo "task3 and task4" > file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ cat file_to_task3
+task3 and task4
+sun@aleksundr:~/lb_os/lb_1$ od file_to_task3
+0000000 060564 065563 020063 067141 020144 060564 065563 005064
+0000020
+sun@aleksundr:~/lb_os/lb_1$ od first_link_task3
+0000000 060564 065563 020063 067141 020144 060564 065563 005064
+0000020
+sun@aleksundr:~/lb_os/lb_1$ hexdump file_to_task3
+0000000 6174 6b73 2033 6e61 2064 6174 6b73 0a34
+0000010
+sun@aleksundr:~/lb_os/lb_1$ od -t x1 -A x out_task1 | head -n 5
+000000 2d 72 77 2d 72 2d 2d 2d 2d 2d 20 31 20 72 6f 6f
+000010 74 20 72 6f 6f 74 20 36 32 30 20 d0 bd d0 be d1
+000020 8f 20 31 33 20 32 33 3a 35 34 20 2f 64 65 62 75
+000030 67 0a 64 72 77 78 72 2d 78 72 2d 78 20 32 20 72
+000040 6f 6f 74 20 72 6f 6f 74 20 34 30 39 36 20 d0 b0
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C out_task1 | head -n 5
+00000000  2d 72 77 2d 72 2d 2d 2d  2d 2d 20 31 20 72 6f 6f  |-rw-r----- 1 roo|
+00000010  74 20 72 6f 6f 74 20 36  32 30 20 d0 bd d0 be d1  |t root 620 .....|
+00000020  8f 20 31 33 20 32 33 3a  35 34 20 2f 64 65 62 75  |. 13 23:54 /debu|
+00000030  67 0a 64 72 77 78 72 2d  78 72 2d 78 20 32 20 72  |g.drwxr-xr-x 2 r|
+00000040  6f 6f 74 20 72 6f 6f 74  20 34 30 39 36 20 d0 b0  |oot root 4096 ..|
+
+
+Задание 7.
+sun@aleksundr:~/lb_os/lb_1$ date
+Пт 28 фев 2025 00:04:35 MSK
+sun@aleksundr:~/lb_os/lb_1$ mkdir test7
+sun@aleksundr:~/lb_os/lb_1$ du test7
+4	test7
+sun@aleksundr:~/lb_os/lb_1$ du -sh test7
+4,0K	test7
+sun@aleksundr:~/lb_os/lb_1$ du
+4	./test7
+60	.
+sun@aleksundr:~/lb_os/lb_1$ du -sh
+60K	.
+sun@aleksundr:~/lb_os/lb_1$ echo "test7" > test7/task7
+sun@aleksundr:~/lb_os/lb_1$ ls -l test7
+итого 4
+-rw-rw-r-- 1 sun sun 6 фев 28 00:07 task7
+sun@aleksundr:~/lb_os/lb_1$ du -sh test7
+8,0K	test7
+sun@aleksundr:~/lb_os/lb_1$ rm -f test7/*
+sun@aleksundr:~/lb_os/lb_1$ du -sh test7
+4,0K	test7
+sun@aleksundr:~/lb_os/lb_1$ rm -r test7
+sun@aleksundr:~/lb_os/lb_1$ vim script_task7.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task7.sh 
+A directory test_dir7 has been created
+Adding files to the directory...
+Directory size: 1,1M
+Directory size: 2,1M
+Directory size: 3,1M
+Directory size: 4,1M
+Directory size: 5,1M
+Directory size: 6,1M
+Directory size: 7,1M
+Directory size: 8,1M
+Directory size: 9,1M
+Directory size: 11M
+Deleting files from the directory...
+Directory size: 9,1M
+Directory size: 8,1M
+Directory size: 7,1M
+Directory size: 6,1M
+Directory size: 5,1M
+Directory size: 4,1M
+Directory size: 3,1M
+Directory size: 2,1M
+The test_dir7 directory has been deleted
+sun@aleksundr:~/lb_os/lb_1$ vim script_task7.sh
+sun@aleksundr:~/lb_os/lb_1$ bash script_task7.sh 
+A directory test_dir7 has been created
+Adding files to the directory...
+Directory size: 8,0K
+Directory size: 12K
+Directory size: 16K
+Directory size: 20K
+Directory size: 24K
+Directory size: 28K
+Directory size: 32K
+Directory size: 36K
+Directory size: 40K
+Directory size: 44K
+Deleting files from the directory...
+Directory size: 40K
+Directory size: 36K
+Directory size: 32K
+Directory size: 28K
+Directory size: 24K
+Directory size: 20K
+Directory size: 16K
+Directory size: 12K
+Directory size: 8,0K
+Directory size: 4,0K
+The test_dir7 directory has been deleted
+
+
+Задание 8.
+sun@aleksundr:/$ date
+Пт 28 фев 2025 00:48:46 MSK
+sun@aleksundr:/$ cd /etc
+sun@aleksundr:/etc$ ls -l passwd
+-rw-r--r-- 1 root root 3077 ноя 13 23:55 passwd
+sun@aleksundr:/etc$ ls -l shadow
+-rw-r----- 1 root shadow 1534 ноя 13 23:55 shadow
+sun@aleksundr:/etc$ cd /usr/bin
+sun@aleksundr:/usr/bin$ ls -l passwd
+-rwsr-xr-x 1 root root 64152 мая 30  2024 passwd
+sun@aleksundr:/usr/bin$ passwd
+Смена пароля для sun.
+Текущий пароль: 
+Новый пароль: 
+НЕУДАЧНЫЙ ПАРОЛЬ: Пароль идентичен предыдущему
+Новый пароль: 
+НЕУДАЧНЫЙ ПАРОЛЬ: Пароль идентичен предыдущему
+Новый пароль: 
+НЕУДАЧНЫЙ ПАРОЛЬ: Пароль слишком схож с предыдущим
+passwd: Использовано максимальное число попыток, заданное для службы
+passwd: пароль не изменён
+sun@aleksundr:/usr/bin$ passwd
+Смена пароля для sun.
+Текущий пароль: 
+Новый пароль: 
+passwd: пароль изменен
+
+
+
+Задание 9
+sun@aleksundr:/$ date
+Пт 28 фев 2025 01:03:41 MSK
+9.1
+sun@aleksundr:~/lb_os/lb_1$ mkdir task9
+sun@aleksundr:~/lb_os/lb_1$ cd task9
+sun@aleksundr:~/lb_os/lb_1/task9$ touch file1 file2
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l
+итого 0
+-rw-rw-r-- 1 sun sun 0 фев 28 00:51 file1
+-rw-rw-r-- 1 sun sun 0 фев 28 00:51 file2
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod u+x file1
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 750 file2
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l
+итого 0
+-rwxrw-r-- 1 sun sun 0 фев 28 00:51 file1
+-rwxr-x--- 1 sun sun 0 фев 28 00:51 file2
+sun@aleksundr:~/lb_os/lb_1/task9$ touch file3
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l file3
+-rw-rw-r-- 1 sun sun 0 фев 28 00:53 file3
+sun@aleksundr:~/lb_os/lb_1/task9$ sudo chown sun:root file3
+[sudo] пароль для sun: 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l file3
+-rw-rw-r-- 1 sun root 0 фев 28 00:53 file3
+
+
+9.2
+sun@aleksundr:~/lb_os/lb_1/task9$ echo '#!/bin/bash
+echo "Hello, world!"' > script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+-rw-rw-r-- 1 sun sun 33 фев 28 01:01 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod +x script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+-rwxrwxr-x 1 sun sun 33 фев 28 01:01 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod u+s script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+-rwsrwxr-x 1 sun sun 33 фев 28 01:01 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ ./script.sh 
+Hello, world!
+
+
+9.3
+sun@aleksundr:~/lb_os/lb_1/task9$ sudo groupadd task9_group
+sun@aleksundr:~/lb_os/lb_1/task9$ getent group task9_group 
+task9_group:x:1001:
+sun@aleksundr:~/lb_os/lb_1/task9$ sudo usermod -aG task9_group sun
+sun@aleksundr:~/lb_os/lb_1/task9$ groups sun
+sun : sun adm cdrom sudo dip plugdev lpadmin lxd sambashare task9_group
+sun@aleksundr:~/lb_os/lb_1/task9$ rm -f script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls
+file1  file2  file3
+sun@aleksundr:~/lb_os/lb_1/task9$ echo '#!/bin/bash
+echo "Hello, world!"' > script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ sudo chown :task9_group script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+-rw-rw-r-- 1 sun task9_group 33 фев 28 01:10 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 000 script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+---------- 1 sun task9_group 33 фев 28 01:10 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ cat script.sh 
+cat: script.sh: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ ./script.sh
+bash: ./script.sh: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 070 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+----rwx--- 1 sun task9_group 33 фев 28 01:10 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ cat script.sh 
+cat: script.sh: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ ./script.sh
+bash: ./script.sh: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 700 script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+-rwx------ 1 sun task9_group 33 фев 28 01:10 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ cat script.sh 
+#!/bin/bash
+echo "Hello, world!"
+sun@aleksundr:~/lb_os/lb_1/task9$ ./script.sh
+Hello, world!
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 740 script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l script.sh 
+-rwxr----- 1 sun task9_group 33 фев 28 01:10 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ cat script.sh 
+#!/bin/bash
+echo "Hello, world!"
+sun@aleksundr:~/lb_os/lb_1/task9$ ./script.sh
+Hello, world!
+
+
+9.4
+sun@aleksundr:~/lb_os/lb_1/task9$ mkdir task_9_4
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+итого 0
+sun@aleksundr:~/lb_os/lb_1/task9$ echo "file1" > task_9_4/file1
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+итого 4
+-rw-rw-r-- 1 sun sun 6 фев 28 01:19 file1
+sun@aleksundr:~/lb_os/lb_1/task9$ cat task_9_4/file1
+file1
+sun@aleksundr:~/lb_os/lb_1/task9$ echo '#!/bin/bash
+echo "Hello, world!"' > task_9_4/script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod +x task_9_4/script.sh 
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+итого 8
+-rw-rw-r-- 1 sun sun  6 фев 28 01:19 file1
+-rwxrwxr-x 1 sun sun 33 фев 28 01:20 script.sh
+
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 000 task_9_4/
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+ls: невозможно открыть каталог 'task_9_4/': Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ cd task_9_4/
+bash: cd: task_9_4/: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ cat task_9_4/file1
+cat: task_9_4/file1: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ ./task_9_4/script.sh
+bash: ./task_9_4/script.sh: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ echo "file2" > task_9_4/file2
+bash: task_9_4/file2: Отказано в доступе
+
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 400 task_9_4/
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+ls: невозможно получить доступ к 'task_9_4/script.sh': Отказано в доступе
+ls: невозможно получить доступ к 'task_9_4/file1': Отказано в доступе
+итого 0
+-????????? ? ? ? ?            ? file1
+-????????? ? ? ? ?            ? script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ cat task_9_4/file1
+cat: task_9_4/file1: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ ./task_9_4/script.sh
+bash: ./task_9_4/script.sh: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ echo "file2" > task_9_4/file2
+bash: task_9_4/file2: Отказано в доступе
+
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 300 task_9_4/
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+ls: невозможно открыть каталог 'task_9_4/': Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9$ cat task_9_4/file1
+file1
+sun@aleksundr:~/lb_os/lb_1/task9$ ./task_9_4/script.sh
+Hello, world!
+sun@aleksundr:~/lb_os/lb_1/task9$ echo "file2" > task_9_4/file2
+sun@aleksundr:~/lb_os/lb_1/task9$ cd task_9_4/
+sun@aleksundr:~/lb_os/lb_1/task9/task_9_4$ ls
+ls: невозможно открыть каталог '.': Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task9/task_9_4$ cd ..
+
+sun@aleksundr:~/lb_os/lb_1/task9$ chmod 700 task_9_4/
+sun@aleksundr:~/lb_os/lb_1/task9$ ls -l task_9_4/
+итого 12
+-rw-rw-r-- 1 sun sun  6 фев 28 01:19 file1
+-rw-rw-r-- 1 sun sun  6 фев 28 01:25 file2
+-rwxrwxr-x 1 sun sun 33 фев 28 01:20 script.sh
+sun@aleksundr:~/lb_os/lb_1/task9$ cat task_9_4/file1
+file1
+sun@aleksundr:~/lb_os/lb_1/task9$ echo "file4" > task_9_4/file4
+sun@aleksundr:~/lb_os/lb_1/task9$ ./task_9_4/script.sh
+Hello, world!
+
+
+
+Задание 10.
+sun@aleksundr:~/lb_os/lb_1$ date
+Пт 28 фев 2025 15:08:11 MSK
+sun@aleksundr:~/lb_os/lb_1$ mkdir task10
+sun@aleksundr:~/lb_os/lb_1$ cd task10
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo useradd -m user1
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo useradd -m user2
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo passwd user1
+Новый пароль: 
+НЕУДАЧНЫЙ ПАРОЛЬ: Пароль должен содержать не менее 8 символов
+Повторите ввод нового пароля: 
+passwd: пароль успешно обновлён
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo passwd user2
+Новый пароль: 
+НЕУДАЧНЫЙ ПАРОЛЬ: Пароль должен содержать не менее 8 символов
+Повторите ввод нового пароля: 
+Извините, но пароли не совпадают.
+Новый пароль: 
+НЕУДАЧНЫЙ ПАРОЛЬ: Пароль должен содержать не менее 8 символов
+Повторите ввод нового пароля: 
+passwd: пароль успешно обновлён
+sun@aleksundr:~/lb_os/lb_1/task10$ su - user1
+Пароль: 
+$ pwd
+/home/user1
+$ echo "task10 information" > task10.txt
+$ cat task10.txt
+task10 information
+$ su - sun
+Пароль: 
+sun@aleksundr:~$ cd ~/lb_os/lb_1/task10
+sun@aleksundr:~/lb_os/lb_1/task10$ vim script_task10.c 
+sun@aleksundr:~/lb_os/lb_1/task10$ groups user1
+user1 : user1
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo usermod -aG group_task10 user1
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo usermod -aG group_task10 sun
+sun@aleksundr:~/lb_os/lb_1/task10$ groups sun
+sun : sun adm cdrom sudo dip plugdev lpadmin lxd sambashare task9_group group_task10
+sun@aleksundr:~/lb_os/lb_1/task10$ groups user1
+user1 : user1 group_task10
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo chown user1:group_task10 /home/user1/task10.txt
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo ls -l /home/user1/task10.txt
+-rw-rw-r-- 1 user1 group_task10 19 фев 28 16:36 /home/user1/task10.txt
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo chmod 600 /home/user1/task10.txt
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo ls -l /home/user1/task10.txt
+-rw------- 1 user1 group_task10 19 фев 28 16:36 /home/user1/task10.txt
+sun@aleksundr:~/lb_os/lb_1/task10$ gcc script_task10.c
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo chown user1:group_task10 a.out
+sun@aleksundr:~/lb_os/lb_1/task10$ ./a.out
+Ошибка при открытии файла: Permission denied
+sun@aleksundr:~/lb_os/lb_1/task10$ ls -l a.out
+-rwxrwxr-x 1 user1 group_task10 16232 фев 28 16:40 a.out
+sun@aleksundr:~/lb_os/lb_1/task10$ sudo chmod 4750 a.out
+sun@aleksundr:~/lb_os/lb_1/task10$ ls -l a.out
+-rwsr-x--- 1 user1 group_task10 16232 фев 28 16:40 a.out
+sun@aleksundr:~/lb_os/lb_1/task10$ ./a.out
+task10 information
+sun@aleksundr:~/lb_os/lb_1/task10$ cat /home/user1/task10.txt
+cat: /home/user1/task10.txt: Отказано в доступе
+sun@aleksundr:~/lb_os/lb_1/task10$ groups user2
+user2 : user2
+sun@aleksundr:~/lb_os/lb_1/task10$ su - user2
+Пароль: 
+$ vim script_task10.c
+$ gcc script_task10.c
+$ ./a.out
+Ошибка при открытии файла: Permission denied
+$ cat /home/user1/task10.txt
+cat: /home/user1/task10.txt: Отказано в доступе
+$ su - sun
+Пароль: 
+sun@aleksundr:~$ sudo chown user1:group_task10 /home/user2/a.out
+sun@aleksundr:~$ sudo chmod 4750 /home/user2/a.out
+sun@aleksundr:~$ su - user2
+Пароль: 
+$ ./a.out
+-sh: 1: ./a.out: Permission denied
+$ su - sun
+Пароль: 
+sun@aleksundr:~$ sudo ls -l /home/user2/a.out
+-rwsr-x--- 1 user1 group_task10 16232 фев 28 16:46 /home/user2/a.out
+sun@aleksundr:~$ sudo chown user1:user2 /home/user2/a.out
+sun@aleksundr:~$ sudo ls -l /home/user2/a.out
+-rwxr-x--- 1 user1 user2 16232 фев 28 16:46 /home/user2/a.out
+sun@aleksundr:~$ su - user2
+Пароль: 
+$ ./a.out
+Ошибка при открытии файла: Permission denied
+$ su sun
+Пароль: 
+sun@aleksundr:/home/user2$ sudo chmod 4750 /home/user2/a.out
+sun@aleksundr:/home/user2$ su - user2
+Пароль: 
+$ ./a.out 
+task10 information
+$ cat /home/user1/task10.txt
+cat: /home/user1/task10.txt: Отказано в доступе
+
+
+Задание 11
+sun@aleksundr:~$ date
+Пт 28 фев 2025 17:13:48 MSK
+sun@aleksundr:~$ df
+Файл.система   1K-блоков Использовано  Доступно Использовано% Cмонтировано в
+tmpfs            1607036         2336   1604700            1% /run
+/dev/sda2       28660644     20020912   7158516           74% /
+tmpfs            8035164       145720   7889444            2% /dev/shm
+tmpfs               5120            8      5112            1% /run/lock
+efivarfs             192          121        67           65% /sys/firmware/efi/efivars
+tmpfs            8035164            0   8035164            0% /run/qemu
+/dev/nvme0n1p1     98304        32139     66165           33% /boot/efi
+/dev/sda3      225655364     51668784 162451120           25% /home
+tmpfs            1607032          288   1606744            1% /run/user/1000
+
+sun@aleksundr:~$ df -h
+Файл.система   Размер Использовано  Дост Использовано% Cмонтировано в
+tmpfs            1,6G         2,3M  1,6G            1% /run
+/dev/sda2         28G          20G  6,9G           74% /
+tmpfs            7,7G         143M  7,6G            2% /dev/shm
+tmpfs            5,0M         8,0K  5,0M            1% /run/lock
+efivarfs         192K         121K   67K           65% /sys/firmware/efi/efivars
+tmpfs            7,7G            0  7,7G            0% /run/qemu
+/dev/nvme0n1p1    96M          32M   65M           33% /boot/efi
+/dev/sda3        216G          50G  155G           25% /home
+tmpfs            1,6G         288K  1,6G            1% /run/user/1000
+
+sun@aleksundr:~$ mount
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+udev on /dev type devtmpfs (rw,nosuid,relatime,size=7999516k,nr_inodes=1999879,mode=755,inode64)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=1607036k,mode=755,inode64)
+/dev/sda2 on / type ext4 (rw,relatime,errors=remount-ro)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,inode64)
+tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode64)
+cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
+pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+efivarfs on /sys/firmware/efi/efivars type efivarfs (rw,nosuid,nodev,noexec,relatime)
+bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=1379)
+tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
+mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
+debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
+configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /run/qemu type tmpfs (rw,nosuid,nodev,relatime,mode=755,inode64)
+/var/lib/snapd/snaps/bare_5.snap on /snap/bare/5 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/code_176.snap on /snap/code/176 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/code_184.snap on /snap/code/184 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core20_2434.snap on /snap/core20/2434 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core20_2496.snap on /snap/core20/2496 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core22_1722.snap on /snap/core22/1722 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core22_1748.snap on /snap/core22/1748 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core24_716.snap on /snap/core24/716 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core24_739.snap on /snap/core24/739 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/discord_229.snap on /snap/discord/229 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/discord_230.snap on /snap/discord/230 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firefox_5361.snap on /snap/firefox/5361 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firefox_5783.snap on /snap/firefox/5783 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firmware-updater_167.snap on /snap/firmware-updater/167 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firmware-updater_147.snap on /snap/firmware-updater/147 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gnome-42-2204_176.snap on /snap/gnome-42-2204/176 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gnome-42-2204_202.snap on /snap/gnome-42-2204/202 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gnome-46-2404_77.snap on /snap/gnome-46-2404/77 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gnome-46-2404_48.snap on /snap/gnome-46-2404/48 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gtk-common-themes_1535.snap on /snap/gtk-common-themes/1535 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/mesa-2404_143.snap on /snap/mesa-2404/143 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snap-store_1244.snap on /snap/snap-store/1244 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/mesa-2404_495.snap on /snap/mesa-2404/495 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snap-store_1248.snap on /snap/snap-store/1248 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd_23258.snap on /snap/snapd/23258 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd_23545.snap on /snap/snapd/23545 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd-desktop-integration_247.snap on /snap/snapd-desktop-integration/247 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd-desktop-integration_253.snap on /snap/snapd-desktop-integration/253 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/thunderbird_644.snap on /snap/thunderbird/644 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/dev/sda2 on /var/snap/firefox/common/host-hunspell type ext4 (ro,noexec,noatime,errors=remount-ro)
+/var/lib/snapd/snaps/thunderbird_663.snap on /snap/thunderbird/663 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/dev/nvme0n1p1 on /boot/efi type vfat (rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
+/dev/sda3 on /home type ext4 (rw,relatime)
+binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /run/user/1000 type tmpfs (rw,nosuid,nodev,relatime,size=1607032k,nr_inodes=401758,mode=700,uid=1000,gid=1000,inode64)
+portal on /run/user/1000/doc type fuse.portal (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+tmpfs on /run/snapd/ns type tmpfs (rw,nosuid,nodev,noexec,relatime,size=1607036k,mode=755,inode64)
+gvfsd-fuse on /run/user/1000/gvfs type fuse.gvfsd-fuse (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+nsfs on /run/snapd/ns/snapd-desktop-integration.mnt type nsfs (rw)
+
+sun@aleksundr:~$ lsblk
+NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0         7:0    0 316,5M  1 loop /snap/code/176
+loop1         7:1    0     4K  1 loop /snap/bare/5
+loop2         7:2    0 319,2M  1 loop /snap/code/184
+loop3         7:3    0  63,7M  1 loop /snap/core20/2434
+loop4         7:4    0  63,7M  1 loop /snap/core20/2496
+loop5         7:5    0  73,9M  1 loop /snap/core22/1722
+loop6         7:6    0  73,9M  1 loop /snap/core22/1748
+loop7         7:7    0  66,2M  1 loop /snap/core24/716
+loop8         7:8    0  66,2M  1 loop /snap/core24/739
+loop9         7:9    0 110,8M  1 loop /snap/discord/229
+loop10        7:10   0 110,8M  1 loop /snap/discord/230
+loop11        7:11   0   274M  1 loop /snap/firefox/5361
+loop12        7:12   0 257,9M  1 loop /snap/firefox/5783
+loop13        7:13   0  11,1M  1 loop /snap/firmware-updater/167
+loop14        7:14   0  11,1M  1 loop /snap/firmware-updater/147
+loop15        7:15   0 505,1M  1 loop /snap/gnome-42-2204/176
+loop16        7:16   0   516M  1 loop /snap/gnome-42-2204/202
+loop17        7:17   0 406,3M  1 loop /snap/gnome-46-2404/48
+loop18        7:18   0 404,1M  1 loop /snap/gnome-46-2404/77
+loop19        7:19   0  91,7M  1 loop /snap/gtk-common-themes/1535
+loop20        7:20   0 211,5M  1 loop /snap/mesa-2404/143
+loop21        7:21   0 207,4M  1 loop /snap/mesa-2404/495
+loop22        7:22   0  10,8M  1 loop /snap/snap-store/1244
+loop23        7:23   0  10,8M  1 loop /snap/snap-store/1248
+loop24        7:24   0  44,3M  1 loop /snap/snapd/23258
+loop25        7:25   0  44,4M  1 loop /snap/snapd/23545
+loop26        7:26   0   564K  1 loop /snap/snapd-desktop-integration/247
+loop27        7:27   0   568K  1 loop /snap/snapd-desktop-integration/253
+loop28        7:28   0 210,4M  1 loop /snap/thunderbird/644
+loop29        7:29   0 210,4M  1 loop /snap/thunderbird/663
+sda           8:0    0 894,3G  0 disk 
+├─sda1        8:1    0 646,6G  0 part 
+├─sda2        8:2    0  27,9G  0 part /var/snap/firefox/common/host-hunspell
+│                                     /
+└─sda3        8:3    0 219,7G  0 part /home
+nvme0n1     259:0    0 238,5G  0 disk 
+├─nvme0n1p1 259:1    0   100M  0 part /boot/efi
+├─nvme0n1p2 259:2    0    16M  0 part 
+├─nvme0n1p3 259:3    0 227,9G  0 part 
+├─nvme0n1p4 259:4    0   516M  0 part 
+└─nvme0n1p5 259:5    0    10G  0 part 
+sun@aleksundr:~$ blkid
+/dev/sda2: UUID="594a192e-a86f-45a3-81cf-b4c01955a629" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="32d25ebd-02"
+
+11.2
+sun@aleksundr:~$ lsblk -f
+NAME FSTYPE FSVER LABEL     UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0
+     squash 4.0                                                        0   100% /snap/code/176
+loop1
+     squash 4.0                                                        0   100% /snap/bare/5
+loop2
+     squash 4.0                                                        0   100% /snap/code/184
+loop3
+     squash 4.0                                                        0   100% /snap/core20/2434
+loop4
+     squash 4.0                                                        0   100% /snap/core20/2496
+loop5
+     squash 4.0                                                        0   100% /snap/core22/1722
+loop6
+     squash 4.0                                                        0   100% /snap/core22/1748
+loop7
+     squash 4.0                                                        0   100% /snap/core24/716
+loop8
+                                                                       0   100% /snap/core24/739
+loop9
+                                                                       0   100% /snap/discord/229
+loop10
+                                                                       0   100% /snap/discord/230
+loop11
+                                                                       0   100% /snap/firefox/5361
+loop12
+                                                                       0   100% /snap/firefox/5783
+loop13
+                                                                       0   100% /snap/firmware-updater/167
+loop14
+                                                                       0   100% /snap/firmware-updater/147
+loop15
+                                                                       0   100% /snap/gnome-42-2204/176
+loop16
+                                                                       0   100% /snap/gnome-42-2204/202
+loop17
+                                                                       0   100% /snap/gnome-46-2404/48
+loop18
+                                                                       0   100% /snap/gnome-46-2404/77
+loop19
+                                                                       0   100% /snap/gtk-common-themes/1535
+loop20
+                                                                       0   100% /snap/mesa-2404/143
+loop21
+                                                                       0   100% /snap/mesa-2404/495
+loop22
+                                                                       0   100% /snap/snap-store/1244
+loop23
+                                                                       0   100% /snap/snap-store/1248
+loop24
+                                                                       0   100% /snap/snapd/23258
+loop25
+                                                                       0   100% /snap/snapd/23545
+loop26
+                                                                       0   100% /snap/snapd-desktop-integration/247
+loop27
+                                                                       0   100% /snap/snapd-desktop-integration/253
+loop28
+                                                                       0   100% /snap/thunderbird/644
+loop29
+                                                                       0   100% /snap/thunderbird/663
+sda                                                                             
+├─sda1
+│    ntfs         Новый том 02BA8A69BA8A5955                                    
+├─sda2
+│    ext4   1.0             594a192e-a86f-45a3-81cf-b4c01955a629    6,8G    70% /var/snap/firefox/common/host-hunspell
+│                                                                               /
+└─sda3
+     ext4   1.0             f43570ea-bf18-4ff5-9327-58abcf11805a  154,9G    23% /home
+nvme0n1
+                                                                                
+├─nvme0n1p1
+│    vfat   FAT32           4E4F-721D                              64,6M    33% /boot/efi
+├─nvme0n1p2
+│                                                                               
+├─nvme0n1p3
+│    ntfs                   EEDA52E1DA52A61D                                    
+├─nvme0n1p4
+│    ntfs                   E484FBBA84FB8CF4                                    
+└─nvme0n1p5
+     ntfs         DriverCD  E43C17A63C1772B2                                    
+
+sun@aleksundr:~$ lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT
+NAME          SIZE FSTYPE   MOUNTPOINT
+loop0       316,5M squashfs /snap/code/176
+loop1           4K squashfs /snap/bare/5
+loop2       319,2M squashfs /snap/code/184
+loop3        63,7M squashfs /snap/core20/2434
+loop4        63,7M squashfs /snap/core20/2496
+loop5        73,9M squashfs /snap/core22/1722
+loop6        73,9M squashfs /snap/core22/1748
+loop7        66,2M squashfs /snap/core24/716
+loop8        66,2M          /snap/core24/739
+loop9       110,8M          /snap/discord/229
+loop10      110,8M          /snap/discord/230
+loop11        274M          /snap/firefox/5361
+loop12      257,9M          /snap/firefox/5783
+loop13       11,1M          /snap/firmware-updater/167
+loop14       11,1M          /snap/firmware-updater/147
+loop15      505,1M          /snap/gnome-42-2204/176
+loop16        516M          /snap/gnome-42-2204/202
+loop17      406,3M          /snap/gnome-46-2404/48
+loop18      404,1M          /snap/gnome-46-2404/77
+loop19       91,7M          /snap/gtk-common-themes/1535
+loop20      211,5M          /snap/mesa-2404/143
+loop21      207,4M          /snap/mesa-2404/495
+loop22       10,8M          /snap/snap-store/1244
+loop23       10,8M          /snap/snap-store/1248
+loop24       44,3M          /snap/snapd/23258
+loop25       44,4M          /snap/snapd/23545
+loop26        564K          /snap/snapd-desktop-integration/247
+loop27        568K          /snap/snapd-desktop-integration/253
+loop28      210,4M          /snap/thunderbird/644
+loop29      210,4M          /snap/thunderbird/663
+sda         894,3G          
+├─sda1      646,6G ntfs     
+├─sda2       27,9G ext4     /
+└─sda3      219,7G ext4     /home
+nvme0n1     238,5G          
+├─nvme0n1p1   100M vfat     /boot/efi
+├─nvme0n1p2    16M          
+├─nvme0n1p3 227,9G ntfs     
+├─nvme0n1p4   516M ntfs     
+└─nvme0n1p5    10G ntfs   
+
+sun@aleksundr:~$ lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT
+NAME          SIZE FSTYPE   MOUNTPOINT
+loop0       316,5M squashfs /snap/code/176
+loop1           4K squashfs /snap/bare/5
+loop2       319,2M squashfs /snap/code/184
+loop3        63,7M squashfs /snap/core20/2434
+loop4        63,7M squashfs /snap/core20/2496
+loop5        73,9M squashfs /snap/core22/1722
+loop6        73,9M squashfs /snap/core22/1748
+loop7        66,2M squashfs /snap/core24/716
+loop8        66,2M          /snap/core24/739
+loop9       110,8M          /snap/discord/229
+loop10      110,8M          /snap/discord/230
+loop11        274M          /snap/firefox/5361
+loop12      257,9M          /snap/firefox/5783
+loop13       11,1M          /snap/firmware-updater/167
+loop14       11,1M          /snap/firmware-updater/147
+loop15      505,1M          /snap/gnome-42-2204/176
+loop16        516M          /snap/gnome-42-2204/202
+loop17      406,3M          /snap/gnome-46-2404/48
+loop18      404,1M          /snap/gnome-46-2404/77
+loop19       91,7M          /snap/gtk-common-themes/1535
+loop20      211,5M          /snap/mesa-2404/143
+loop21      207,4M          /snap/mesa-2404/495
+loop22       10,8M          /snap/snap-store/1244
+loop23       10,8M          /snap/snap-store/1248
+loop24       44,3M          /snap/snapd/23258
+loop25       44,4M          /snap/snapd/23545
+loop26        564K          /snap/snapd-desktop-integration/247
+loop27        568K          /snap/snapd-desktop-integration/253
+loop28      210,4M          /snap/thunderbird/644
+loop29      210,4M          /snap/thunderbird/663
+sda         894,3G          
+├─sda1      646,6G ntfs     
+├─sda2       27,9G ext4     /
+└─sda3      219,7G ext4     /home
+sdb         976,6G          
+└─sdb1      976,6G exfat    /media/sun/SSD
+nvme0n1     238,5G          
+├─nvme0n1p1   100M vfat     /boot/efi
+├─nvme0n1p2    16M          
+├─nvme0n1p3 227,9G ntfs     
+├─nvme0n1p4   516M ntfs     
+└─nvme0n1p5    10G ntfs  
+
+# добавлен съемный носитель sdb         976,6G          
+# 			    └─sdb1      976,6G exfat    /media/sun/SSD
+
+sun@aleksundr:~$ findmnt 
+TARGET                  SOURCE FSTYPE OPTIONS
+/                       /dev/sda2
+                               ext4   rw,relatime,errors=remount-ro
+├─/sys                  sysfs  sysfs  rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security
+│ │                     securityfs
+│ │                            securi rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup      cgroup2
+│ │                            cgroup rw,nosuid,nodev,noexec,relatime,nsdelegate
+│ ├─/sys/fs/pstore      pstore pstore rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars
+│ │                     efivarfs
+│ │                            efivar rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf         bpf    bpf    rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/tracing tracefs
+│ │                            tracef rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/debug   debugfs
+│ │                            debugf rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/fuse/connections
+│ │                     fusectl
+│ │                            fusect rw,nosuid,nodev,noexec,relatime
+│ └─/sys/kernel/config  configfs
+│                              config rw,nosuid,nodev,noexec,relatime
+├─/proc                 proc   proc   rw,nosuid,nodev,noexec,relatime
+│ └─/proc/sys/fs/binfmt_misc
+│                       systemd-1
+│                              autofs rw,relatime,fd=32,pgrp=1,timeout=0,minprot
+│   └─/proc/sys/fs/binfmt_misc
+│                       binfmt_misc
+│                              binfmt rw,nosuid,nodev,noexec,relatime
+├─/dev                  udev   devtmp rw,nosuid,relatime,size=7999516k,nr_inodes
+│ ├─/dev/pts            devpts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,p
+│ ├─/dev/shm            tmpfs  tmpfs  rw,nosuid,nodev,inode64
+│ ├─/dev/hugepages      hugetlbfs
+│ │                            hugetl rw,nosuid,nodev,relatime,pagesize=2M
+│ └─/dev/mqueue         mqueue mqueue rw,nosuid,nodev,noexec,relatime
+├─/run                  tmpfs  tmpfs  rw,nosuid,nodev,noexec,relatime,size=16070
+│ ├─/run/lock           tmpfs  tmpfs  rw,nosuid,nodev,noexec,relatime,size=5120k
+│ ├─/run/qemu           tmpfs  tmpfs  rw,nosuid,nodev,relatime,mode=755,inode64
+│ ├─/run/user/1000      tmpfs  tmpfs  rw,nosuid,nodev,relatime,size=1607032k,nr_
+│ │ ├─/run/user/1000/doc
+│ │ │                   portal fuse.p rw,nosuid,nodev,relatime,user_id=1000,grou
+│ │ └─/run/user/1000/gvfs
+│ │                     gvfsd-fuse
+│ │                            fuse.g rw,nosuid,nodev,relatime,user_id=1000,grou
+│ └─/run/snapd/ns       tmpfs[/snapd/ns]
+│                              tmpfs  rw,nosuid,nodev,noexec,relatime,size=16070
+│   └─/run/snapd/ns/snapd-desktop-integration.mnt
+│                       nsfs[mnt:[4026532915]]
+│                              nsfs   rw
+├─/snap/bare/5          /dev/loop1
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/code/176        /dev/loop0
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/code/184        /dev/loop2
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/core20/2434     /dev/loop3
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/core20/2496     /dev/loop4
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/core22/1722     /dev/loop5
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/core22/1748     /dev/loop6
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/core24/716      /dev/loop7
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/core24/739      /dev/loop8
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/discord/229     /dev/loop9
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/discord/230     /dev/loop10
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/firefox/5361    /dev/loop11
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/firefox/5783    /dev/loop12
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/firmware-updater/167
+│                       /dev/loop13
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/firmware-updater/147
+│                       /dev/loop14
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/gnome-42-2204/176
+│                       /dev/loop15
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/gnome-42-2204/202
+│                       /dev/loop16
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/gnome-46-2404/77
+│                       /dev/loop18
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/gnome-46-2404/48
+│                       /dev/loop17
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/gtk-common-themes/1535
+│                       /dev/loop19
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/mesa-2404/143   /dev/loop20
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/snap-store/1244 /dev/loop22
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/mesa-2404/495   /dev/loop21
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/snap-store/1248 /dev/loop23
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/snapd/23258     /dev/loop24
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/snapd/23545     /dev/loop25
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/snapd-desktop-integration/247
+│                       /dev/loop26
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/snapd-desktop-integration/253
+│                       /dev/loop27
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/snap/thunderbird/644 /dev/loop28
+│                              squash ro,nodev,relatime,errors=continue,threads=
+├─/var/snap/firefox/common/host-hunspell
+│                       /dev/sda2[/usr/share/hunspell]
+│                              ext4   ro,noexec,noatime,errors=remount-ro
+├─/boot/efi             /dev/nvme0n1p1
+│                              vfat   rw,relatime,fmask=0077,dmask=0077,codepage
+├─/home                 /dev/sda3
+│                              ext4   rw,relatime
+└─/snap/thunderbird/663 /dev/loop29
+                               squash ro,nodev,relatime,errors=continue,threads=
+                               
+sun@aleksundr:~$ findmnt 
+TARGET                   SOURCE FSTYPE OPTIONS
+/                        /dev/sda2
+                                ext4   rw,relatime,errors=remount-ro
+├─/sys                   sysfs  sysfs  rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security securityfs
+│ │                             securi rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup       cgroup2
+│ │                             cgroup rw,nosuid,nodev,noexec,relatime,nsdelegat
+│ ├─/sys/fs/pstore       pstore pstore rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars
+│ │                      efivarfs
+│ │                             efivar rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf          bpf    bpf    rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/tracing  tracefs
+│ │                             tracef rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/debug    debugfs
+│ │                             debugf rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/fuse/connections
+│ │                      fusectl
+│ │                             fusect rw,nosuid,nodev,noexec,relatime
+│ └─/sys/kernel/config   configfs
+│                               config rw,nosuid,nodev,noexec,relatime
+├─/proc                  proc   proc   rw,nosuid,nodev,noexec,relatime
+│ └─/proc/sys/fs/binfmt_misc
+│                        systemd-1
+│                               autofs rw,relatime,fd=32,pgrp=1,timeout=0,minpro
+│   └─/proc/sys/fs/binfmt_misc
+│                        binfmt_misc
+│                               binfmt rw,nosuid,nodev,noexec,relatime
+├─/dev                   udev   devtmp rw,nosuid,relatime,size=7999516k,nr_inode
+│ ├─/dev/pts             devpts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,
+│ ├─/dev/shm             tmpfs  tmpfs  rw,nosuid,nodev,inode64
+│ ├─/dev/hugepages       hugetlbfs
+│ │                             hugetl rw,nosuid,nodev,relatime,pagesize=2M
+│ └─/dev/mqueue          mqueue mqueue rw,nosuid,nodev,noexec,relatime
+├─/run                   tmpfs  tmpfs  rw,nosuid,nodev,noexec,relatime,size=1607
+│ ├─/run/lock            tmpfs  tmpfs  rw,nosuid,nodev,noexec,relatime,size=5120
+│ ├─/run/qemu            tmpfs  tmpfs  rw,nosuid,nodev,relatime,mode=755,inode64
+│ ├─/run/user/1000       tmpfs  tmpfs  rw,nosuid,nodev,relatime,size=1607032k,nr
+│ │ ├─/run/user/1000/doc portal fuse.p rw,nosuid,nodev,relatime,user_id=1000,gro
+│ │ └─/run/user/1000/gvfs
+│ │                      gvfsd-fuse
+│ │                             fuse.g rw,nosuid,nodev,relatime,user_id=1000,gro
+│ └─/run/snapd/ns        tmpfs[/snapd/ns]
+│                               tmpfs  rw,nosuid,nodev,noexec,relatime,size=1607
+│   └─/run/snapd/ns/snapd-desktop-integration.mnt
+│                        nsfs[mnt:[4026532915]]
+│                               nsfs   rw
+├─/snap/bare/5           /dev/loop1
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/code/176         /dev/loop0
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/code/184         /dev/loop2
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/core20/2434      /dev/loop3
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/core20/2496      /dev/loop4
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/core22/1722      /dev/loop5
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/core22/1748      /dev/loop6
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/core24/716       /dev/loop7
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/core24/739       /dev/loop8
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/discord/229      /dev/loop9
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/discord/230      /dev/loop10
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/firefox/5361     /dev/loop11
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/firefox/5783     /dev/loop12
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/firmware-updater/167
+│                        /dev/loop13
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/firmware-updater/147
+│                        /dev/loop14
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/gnome-42-2204/176
+│                        /dev/loop15
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/gnome-42-2204/202
+│                        /dev/loop16
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/gnome-46-2404/77 /dev/loop18
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/gnome-46-2404/48 /dev/loop17
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/gtk-common-themes/1535
+│                        /dev/loop19
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/mesa-2404/143    /dev/loop20
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/snap-store/1244  /dev/loop22
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/mesa-2404/495    /dev/loop21
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/snap-store/1248  /dev/loop23
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/snapd/23258      /dev/loop24
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/snapd/23545      /dev/loop25
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/snapd-desktop-integration/247
+│                        /dev/loop26
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/snapd-desktop-integration/253
+│                        /dev/loop27
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/snap/thunderbird/644  /dev/loop28
+│                               squash ro,nodev,relatime,errors=continue,threads
+├─/var/snap/firefox/common/host-hunspell
+│                        /dev/sda2[/usr/share/hunspell]
+│                               ext4   ro,noexec,noatime,errors=remount-ro
+├─/boot/efi              /dev/nvme0n1p1
+│                               vfat   rw,relatime,fmask=0077,dmask=0077,codepag
+├─/home                  /dev/sda3
+│                               ext4   rw,relatime
+├─/media/sun/SSD         /dev/sdb1
+│                               exfat  rw,nosuid,nodev,relatime,uid=1000,gid=100
+└─/snap/thunderbird/663  /dev/loop29
+                                squash ro,nodev,relatime,errors=continue,threads
+                                
+# добавлен съемный носитель ├─/media/sun/SSD         /dev/sdb1
+#			    │                               exfat  rw,nosuid,nodev,relatime,uid=1000,gid=100
+
+sun@aleksundr:~$ cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sda2 during installation
+UUID=594a192e-a86f-45a3-81cf-b4c01955a629 /               ext4    errors=remount-ro 0       1
+# /boot/efi was on /dev/nvme0n1p1 during installation
+UUID=4E4F-721D  /boot/efi       vfat    umask=0077      0       1
+# /home was on /dev/sda3 during installation
+UUID=f43570ea-bf18-4ff5-9327-58abcf11805a /home           ext4    defaults        0       2
+
+
+11.3
+sun@aleksundr:~$ find / -type d -printf '%d\t%p\n' 2> /dev/null | sort -n | tail -n 1
+19	/home/sun/.local/share/Trash/files/orgevm/gcc-6.3.0/libjava/classpath/tools/resource/gnu/classpath/tools/gjdoc/doctranslets/html/res
+
+
+Задание 12
+sun@aleksundr:~/lb_os/lb_1$ date
+Пт 28 фев 2025 17:48:06 MSK
+
+12.1
+sun@aleksundr:~/lb_os/lb_1$ file picture.png 
+picture.png: PNG image data, 2500 x 1525, 8-bit colormap, non-interlaced
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C picture.png | head
+00000000  89 50 4e 47 0d 0a 1a 0a  00 00 00 0d 49 48 44 52  |.PNG........IHDR|
+00000010  00 00 09 c4 00 00 05 f5  08 03 00 00 00 11 2b bb  |..............+.|
+00000020  73 00 00 02 fa 50 4c 54  45 4c 69 71 b1 dc eb b5  |s....PLTELiq....|
+00000030  dd eb bc df ef d6 e4 f1  cf ec f5 cc e9 f0 ff ff  |................|
+00000040  ff d4 e9 ff d4 ff ff c0  e1 f0 c8 e6 f0 c9 e7 f3  |................|
+00000050  c3 e5 ee a3 d4 e8 9b d0  e5 98 ce e3 82 c6 de b3  |................|
+00000060  dc eb 94 cd e4 a9 d7 e8  6e bc d9 d2 e9 f2 80 c4  |........n.......|
+00000070  de 84 c5 df 5b b6 d5 3d  ac cf 2e a6 cb 4f b3 d3  |....[..=.....O..|
+00000080  6c bd da 1a 9f c5 0e a0  c8 27 a0 c5 6e ba d6 cf  |l........'..n...|
+00000090  e7 f1 4a af ce 81 c5 df  3a aa cb 58 b0 cd 60 b8  |..J.....:..X..`.|
+
+sun@aleksundr:~/lb_os/lb_1$ file /bin/ls
+/bin/ls: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=3eca7e3905b37d48cf0a88b576faa7b95cc3097b, for GNU/Linux 3.2.0, stripped
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C /bin/ls | head
+00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
+00000010  03 00 3e 00 01 00 00 00  30 6d 00 00 00 00 00 00  |..>.....0m......|
+00000020  40 00 00 00 00 00 00 00  28 24 02 00 00 00 00 00  |@.......($......|
+00000030  00 00 00 00 40 00 38 00  0d 00 40 00 1f 00 1e 00  |....@.8...@.....|
+00000040  06 00 00 00 04 00 00 00  40 00 00 00 00 00 00 00  |........@.......|
+00000050  40 00 00 00 00 00 00 00  40 00 00 00 00 00 00 00  |@.......@.......|
+00000060  d8 02 00 00 00 00 00 00  d8 02 00 00 00 00 00 00  |................|
+00000070  08 00 00 00 00 00 00 00  03 00 00 00 04 00 00 00  |................|
+00000080  18 03 00 00 00 00 00 00  18 03 00 00 00 00 00 00  |................|
+00000090  18 03 00 00 00 00 00 00  1c 00 00 00 00 00 00 00  |................|
+
+sun@aleksundr:~/lb_os/lb_1$ file file_to_task2
+file_to_task2: ASCII text
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C file_to_task2 | head
+00000000  31 32 33 0a                                       |123.|
+00000004
+
+sun@aleksundr:~/lb_os/lb_1$ file script_task2.sh 
+script_task2.sh: Bourne-Again shell script, ASCII text executable
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C script_task2.sh | head
+00000000  23 21 2f 62 69 6e 2f 62  61 73 68 0a 0a 69 66 20  |#!/bin/bash..if |
+00000010  5b 20 2d 7a 20 22 24 31  22 20 5d 3b 20 74 68 65  |[ -z "$1" ]; the|
+00000020  6e 0a 20 20 20 20 65 63  68 6f 20 22 46 69 6c 65  |n.    echo "File|
+00000030  20 6e 61 6d 65 20 69 73  20 6e 6f 74 20 73 70 65  | name is not spe|
+00000040  63 69 66 69 65 64 22 0a  20 20 20 20 65 78 69 74  |cified".    exit|
+00000050  20 31 0a 66 69 0a 0a 69  6e 6f 64 65 3d 24 28 6c  | 1.fi..inode=$(l|
+00000060  73 20 2d 69 20 22 24 31  22 20 7c 20 61 77 6b 20  |s -i "$1" | awk |
+00000070  27 7b 70 72 69 6e 74 20  24 31 7d 27 29 0a 0a 6c  |'{print $1}')..l|
+00000080  73 20 2d 69 52 20 2f 20  32 3e 2f 64 65 76 2f 6e  |s -iR / 2>/dev/n|
+00000090  75 6c 6c 20 7c 20 61 77  6b 20 2d 76 20 69 6e 6f  |ull | awk -v ino|
+
+sun@aleksundr:~/lb_os/lb_1$ file task10/script_task10.c 
+task10/script_task10.c: C source, Unicode text, UTF-8 text
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C task10/script_task10.c | head
+00000000  23 69 6e 63 6c 75 64 65  20 3c 73 74 64 69 6f 2e  |#include <stdio.|
+00000010  68 3e 0a 23 69 6e 63 6c  75 64 65 20 3c 73 74 64  |h>.#include <std|
+00000020  6c 69 62 2e 68 3e 0a 23  69 6e 63 6c 75 64 65 20  |lib.h>.#include |
+00000030  3c 66 63 6e 74 6c 2e 68  3e 0a 23 69 6e 63 6c 75  |<fcntl.h>.#inclu|
+00000040  64 65 20 3c 75 6e 69 73  74 64 2e 68 3e 0a 23 69  |de <unistd.h>.#i|
+00000050  6e 63 6c 75 64 65 20 3c  73 79 73 2f 73 74 61 74  |nclude <sys/stat|
+00000060  2e 68 3e 0a 0a 69 6e 74  20 6d 61 69 6e 28 29 20  |.h>..int main() |
+00000070  7b 0a 20 20 20 20 63 6f  6e 73 74 20 63 68 61 72  |{.    const char|
+00000080  20 2a 66 69 6c 65 6e 61  6d 65 20 3d 20 22 2f 68  | *filename = "/h|
+00000090  6f 6d 65 2f 75 73 65 72  31 2f 74 61 73 6b 31 30  |ome/user1/task10|
+
+sun@aleksundr:~/lb_os/lb_1$ file task10/a.out
+task10/a.out: setuid ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=22ebb1c48f63bcc2527216db136596d2ef0f533a, for GNU/Linux 3.2.0, not stripped
+sun@aleksundr:~/lb_os/lb_1$ hexdump -C task10/a.out | head
+00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
+00000010  03 00 3e 00 01 00 00 00  20 11 00 00 00 00 00 00  |..>..... .......|
+00000020  40 00 00 00 00 00 00 00  a8 37 00 00 00 00 00 00  |@........7......|
+00000030  00 00 00 00 40 00 38 00  0d 00 40 00 1f 00 1e 00  |....@.8...@.....|
+00000040  06 00 00 00 04 00 00 00  40 00 00 00 00 00 00 00  |........@.......|
+00000050  40 00 00 00 00 00 00 00  40 00 00 00 00 00 00 00  |@.......@.......|
+00000060  d8 02 00 00 00 00 00 00  d8 02 00 00 00 00 00 00  |................|
+00000070  08 00 00 00 00 00 00 00  03 00 00 00 04 00 00 00  |................|
+00000080  18 03 00 00 00 00 00 00  18 03 00 00 00 00 00 00  |................|
+00000090  18 03 00 00 00 00 00 00  1c 00 00 00 00 00 00 00  |................|
+
+
+12.2
+sun@aleksundr:~/lb_os/lb_1$ man file
+sun@aleksundr:~/lb_os/lb_1$ file -i task10/a.out
+task10/a.out: application/x-pie-executable; charset=binary
+sun@aleksundr:~/lb_os/lb_1$ file -s task10/a.out
+task10/a.out: setuid ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=22ebb1c48f63bcc2527216db136596d2ef0f533a, for GNU/Linux 3.2.0, not stripped
+sun@aleksundr:~/lb_os/lb_1$ sudo file -s /dev/sda1
+[sudo] пароль для sun: 
+/dev/sda1: DOS/MBR boot sector, code offset 0x52+2, OEM-ID "NTFS    ", sectors/cluster 8, Media descriptor 0xf8, sectors/track 63, heads 255, hidden sectors 2048, dos < 4.0 BootSector (0x80), FAT (1Y bit by descriptor); NTFS, sectors/track 63, sectors 1356025855, $MFT start cluster 786432, $MFTMirror start cluster 2, bytes/RecordSegment 2^(-1*246), clusters/index block 1, serial number 02ba8a69ba8a5955; contains bootstrap BOOTMGR
+sun@aleksundr:~/lb_os/lb_1$ file first_link_task3
+first_link_task3: symbolic link to file_to_task3
+sun@aleksundr:~/lb_os/lb_1$ file -L first_link_task3
+first_link_task3: ASCII text
+
+12.3
+sun@aleksundr:~/lb_os/lb_1$ echo -ne "Sun_best man in the world" > task12_first.sun
+sun@aleksundr:~/lb_os/lb_1$ echo -ne "Sun_the best man in the world" > task12_second.sun
+sun@aleksundr:~/lb_os/lb_1$ sudo vim /etc/magic
+sun@aleksundr:~/lb_os/lb_1$ sudo cat /etc/magic
+# Magic local data for file(1) command.
+# Insert here your local magic data. Format is described in magic(5).
+
+0	string Sun_	Sun file
+>0x04	string best	best file
+>0x04	string the 	the best file
+sun@aleksundr:~/lb_os/lb_1$ file task12_first.sun 
+task12_first.sun: Sun file best file
+sun@aleksundr:~/lb_os/lb_1$ file task12_second.sun 
+task12_second.sun: Sun file the best file
+
